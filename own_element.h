@@ -14,15 +14,19 @@ class OwnElement : public QFrame
 {
     Q_OBJECT
 public:
-    OwnElement(QString fileName, QString title, QString desc);
+    OwnElement(QString fileName, QString title, QString user, QString desc);
 
 private:
     QImage* mpImg;
     QLabel* mpLable;
+    QLabel* mpTitle;
+    QLabel* mpUser;
+    QLabel* mpDesc;
     QVector<QPushButton*> mvpLabels;
     QGridLayout* mpLayout;
 
     QString mTitle;
+    QString mUser;
     QString mDesc;
     int mCategory;
 };

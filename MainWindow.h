@@ -2,17 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 
-#include <QPushButton>
-#include <QVector>
-#include <QListWidget>
-#include <QLabel>
-
-#include "own_element.h"
-#include "own_stackedview.h"
-#include "own_button.h"
+#include "own_mainwidget.h"
 
 class QFrame;
 
@@ -27,26 +18,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QFrame* createContainer(QString path, QString title, QString author);
-
-public slots:
-    void on_btn1_clicked();
-    void on_btn2_clicked();
-    void on_btn3_clicked();
+protected:
+    void paintEvent(QPaintEvent *event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent*event);
 
 private:
     Ui::MainWindow *ui;
-    QVBoxLayout* pMainLayout;
-    QHBoxLayout* pTopLayout;
-    QGridLayout* pListLayout;
-
-    QListWidget* pImgList;
-    QVector<QObject*> vpButtons;
-    QVector<QListWidgetItem*> vpImgs;
-
-    QVector<mf::OwnElement*> mvpElements;
-    mf::OwnStackedView* mpStackedView;
-    mf::OwnButtonGroup* mpBtnGrp;
+    mf::OwnMainWidget* mpMainWidget;
+    QPoint mDragPos;
 };
 
 #endif // MAINWINDOW_H

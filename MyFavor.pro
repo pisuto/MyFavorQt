@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,15 +28,26 @@ SOURCES += \
         main.cpp \
         MainWindow.cpp \
         own_button.cpp \
+        own_config.cpp \
+        own_database.cpp \
         own_element.cpp \
-        own_stackedview.cpp
+        own_fadestackedview.cpp \
+        own_mainwidget.cpp \
+        own_pagebar.cpp \
+        own_slidestackedview.cpp
 
 HEADERS += \
         MainWindow.h \
         own_button.h \
         own_config.h \
+        own_database.h \
+        own_database_item.h \
         own_element.h \
-        own_stackedview.h
+        own_fadestackedview.h \
+        own_mainwidget.h \
+        own_pagebar.h \
+        own_slidestackedview.h \
+        own_util.h
 
 FORMS += \
         MainWindow.ui
@@ -47,4 +58,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    images.qrc \
     qss.qrc

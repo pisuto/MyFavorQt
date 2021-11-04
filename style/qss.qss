@@ -1,14 +1,61 @@
-QLabel#user
-{
-min-width: 36px;
-min-height: 36px;
-max-width:36px;
-max-height: 36px;
-border-radius: 18px;
-background:grey
-}
-
 QFrame#own_element
 {
 background:grey;
 }
+
+QFrame
+{
+background:white;
+}
+
+QMainWindow
+{
+background:white;
+}
+
+QWidget#own_buttongroup
+{
+background:rgba(220,220,220,100);
+}
+
+QLabel#own_element_title
+{
+background:rgba(220,220,220,0);
+}
+
+QLabel#own_element_user
+{
+background:rgba(220,220,220,0);
+}
+
+QLabel#own_element_desc
+{
+background:rgba(220,220,220,0);
+}
+
+QLineEdit#own_pagebar_edit
+{
+border: 2px solid gray;
+border-radius: 4px;
+background: white;
+}
+
+.QLabel[page="true"]
+{
+padding: 5px;
+}
+
+.QLabel[currentPage="true"]
+{
+color: white;
+border-radius: 4px;
+background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(156, 156, 156, 255), stop:1 rgba(181, 181, 181, 255));
+}
+
+.QLabel[page="true"]:hover
+{
+color: white;
+border-radius: 4px;
+background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(181, 181, 181, 255), stop:1 rgba(207, 207, 207, 255));
+}
+

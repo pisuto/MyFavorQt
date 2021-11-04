@@ -1,4 +1,4 @@
-#include "own_stackedview.h"
+#include "own_slidestackedview.h"
 
 #include <QPropertyAnimation>
 #include <QPainter>
@@ -6,33 +6,28 @@
 
 namespace mf {
 
-OwnStackedView::OwnStackedView(QWidget* parent) : QStackedWidget (parent),
+OwnSlideStackedView::OwnSlideStackedView(QWidget* parent) : QStackedWidget (parent),
   mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mbIsLeft(true),
   mbIsAnimation(false)
 {
-//    this->moveToThread(mpOwnThread);
-
-    connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnStackedView::valueChangedAnimation);
-    connect(mpAnime, &QPropertyAnimation::finished, this, &OwnStackedView::animationFininshed);
+    connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);
+    connect(mpAnime, &QPropertyAnimation::finished, this, &OwnSlideStackedView::animationFininshed);
 }
 
-void OwnStackedView::valueChangedAnimation(QVariant value)
+void OwnSlideStackedView::valueChangedAnimation(QVariant value)
 {
     this->mCurrentVal = value;
     this->update();
 }
 
-void OwnStackedView::animationFininshed()
+void OwnSlideStackedView::animationFininshed()
 {
     mbIsAnimation = false;
     this->widget(this->currentIndex())->show();
     this->setCurrentIndex(mNextIdx);
-
-//    mpOwnThread->quit();
-//    mpOwnThread->wait();
 }
 
-void OwnStackedView::nextWidget()
+void OwnSlideStackedView::nextWidget()
 {
     if(mbIsAnimation)
         return;
@@ -43,7 +38,7 @@ void OwnStackedView::nextWidget()
     startAnimation(index);
 }
 
-void OwnStackedView::previousWidget()
+void OwnSlideStackedView::previousWidget()
 {
     if(mbIsAnimation)
         return;
@@ -54,7 +49,7 @@ void OwnStackedView::previousWidget()
     startAnimation(index);
 }
 
-void OwnStackedView::startAnimation(int index)
+void OwnSlideStackedView::startAnimation(int index)
 {
     mbIsAnimation = true;
     this->widget(index)->hide();
@@ -67,7 +62,7 @@ void OwnStackedView::startAnimation(int index)
 }
 
 
-void OwnStackedView::paintEvent(QPaintEvent *event)
+void OwnSlideStackedView::paintEvent(QPaintEvent *event)
 {
     if(!mbIsAnimation)
         return;
@@ -76,7 +71,7 @@ void OwnStackedView::paintEvent(QPaintEvent *event)
     paintPrevious(painter, this->currentIndex());
 }
 
-void OwnStackedView::paintPrevious(QPainter &painter, int index)
+void OwnSlideStackedView::paintPrevious(QPainter &painter, int index)
 {
     QWidget *widget = this->widget(index);
     QPixmap pixmap((widget->size()));
@@ -84,6 +79,7 @@ void OwnStackedView::paintPrevious(QPainter &painter, int index)
     QRect rect = widget->geometry();
 
     double value = mCurrentVal.toDouble();
+    // 左上角、宽和高
     QRectF r1(0.0, 0.0, value, rect.height());
     QRectF r2(rect.width() - value, 0, value, rect.height());
     if(mbIsLeft)
@@ -96,7 +92,7 @@ void OwnStackedView::paintPrevious(QPainter &painter, int index)
     }
 }
 
-void OwnStackedView::paintNext(QPainter &painter, int index)
+void OwnSlideStackedView::paintNext(QPainter &painter, int index)
 {
     QWidget *nextWidget = this->widget(index);
     QRect rect = this->geometry();

@@ -6,6 +6,7 @@
 #include <QSharedPointer>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QLabel>
 
 namespace mf {
 
@@ -56,15 +57,59 @@ public:
         auto pScreen = QGuiApplication::primaryScreen();
         mElement.setWidth(pScreen->size().width()*1/3*1/4);
         mElement.setHeight(mElement.width()*2);
+
+        // 设置标题font
+        QFont font("Microsoft YaHei", 10, QFont::Bold);
+        QPalette pale;
+        pale.setColor(QPalette::WindowText, Qt::white);
     }
 
-    QSize getElementSize() { return mElement; }
+    QSize getElementSize() const { return mElement; }
+
+    void setTitleStyle(QLabel* pTitle)
+    {
+        QFont font("Microsoft YaHei", 15, QFont::Bold);
+        QPalette pale;
+        pale.setColor(QPalette::WindowText, Qt::white);
+        pTitle->setFont(font);
+        pTitle->setPalette(pale);
+    }
+
+    void setFont(QLabel* pLabel, int size = 7, QFont::Weight weight = QFont::Normal)
+    {
+        QFont font("Microsoft YaHei", size, weight);
+        pLabel->setFont(font);
+    }
 
 private:
     QSize mElement;
 
 };
 
+// sql相关全局数据
+struct SQL_TABLE_ITEM
+{
+    static const QString ITEM_DATABASE_NAME;
+    static const QString ITEM_TABLE_NAME;
+    static const QString ITEM_ID;
+    static const QString ITEM_TITLE;
+    static const QString ITEM_AUTHOR;
+    static const QString ITEM_DESC;
+    static const QString ITEM_LABEL;
+    static const QString ITEM_IMAGEPATH;
+    static const QString ITEM_CATEGORY;
+
+    static QString Placeholder(const QString& item) { return ":" + item; }
+};
+
+struct SQL_SYNTAX
+{
+    static const QString CREATE_ITEM_TABLE_SQL;
+    static const QString INSERT_ITEM_SQL;
+    static const QString SELECT_ITEM_SQL;
+    static const QString UPDATE_ITEM_SQL;
+    static const QString DELETE_ITEM_SQL;
+};
 
 }
 

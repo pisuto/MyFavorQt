@@ -1,92 +1,71 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include <QGraphicsDropShadowEffect>
+#include <QVBoxLayout>
+#include <QFrame>
+#include <QPainter>
+#include <QtMath>
+#include <QDebug>
+
+#define SHADOW_WIDTH 8		// 阴影边框宽度;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    mpStackedView(new mf::OwnStackedView),
-    mpBtnGrp(new mf::OwnButtonGroup)
+    mpMainWidget(new mf::OwnMainWidget(this))
 {
     ui->setupUi(this);
-    // 创建layout
-    pMainLayout = new QVBoxLayout(this->centralWidget());
+    //设置无边框透明
+    this->setWindowFlags(Qt::FramelessWindowHint);//无边框
+    this->setAttribute(Qt::WA_TranslucentBackground);//背景透明
 
-    // 创建buttons
-    auto btn1 = new QPushButton("Anime");
-    auto btn2 = new QPushButton("Movie");
-    auto btn3 = new QPushButton("Music");
-    auto btn4 = new QPushButton("Set");
-    connect(btn1, &QPushButton::clicked,
-            this, &MainWindow::on_btn1_clicked);
-    connect(btn2, &QPushButton::clicked,
-            this, &MainWindow::on_btn2_clicked);
-    connect(btn3, &QPushButton::clicked,
-            this, &MainWindow::on_btn3_clicked);
-    // 添加buttons到layout里
-    mpBtnGrp->addButton(btn1, 0);
-    mpBtnGrp->addButton(btn2, 1);
-    mpBtnGrp->addButton(btn3, 2);
-    mpBtnGrp->addStretch(1);
-    mpBtnGrp->addButton(btn4, 3);
-//    pTopLayout->addStretch(1);
-//    auto user = new QLabel("User");
-//    user->setObjectName("user");
-//    pTopLayout->addWidget(user);
-
-    // 显示元素
-    QString path = "F:/Projects/Project.program/Qt/MyFavor/images/OIP-C.jpg";
-    auto container1 = createContainer(path, "", "");
-    auto container2 = createContainer(path, "", "");
-    auto container3 = createContainer(path, "", "");
-    auto container4 = createContainer(path, "", "");
-    mpStackedView->addWidget(container1);
-    mpStackedView->addWidget(container2);
-    mpStackedView->addWidget(container3);
-    mpStackedView->addWidget(container4);
-
-    // 设置边框
-    pMainLayout->setMargin(0);
-    // 设置所有layout之间的包含关系
-    pMainLayout->addWidget(mpBtnGrp);
-    pMainLayout->addWidget(mpStackedView);
+    auto pBox = new QVBoxLayout(this->centralWidget());
+    pBox->addWidget(mpMainWidget);
 }
 
-QFrame* MainWindow::createContainer(QString path, QString title, QString author)
+void MainWindow::paintEvent(QPaintEvent*)
 {
-    auto pTmpLayout = new QGridLayout();
-//    for(int i=0; i < 9; ++i)
-//    {
-//        auto tmpElem = new mf::OwnElement(path, title, author);
-//        mvpElements.push_back(tmpElem);
-//    }
-    const int row = 3, col = 3;
-    for(int i = 0; i < row; ++i)
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.fillRect(QRect(SHADOW_WIDTH, SHADOW_WIDTH, this->width() - 2 * SHADOW_WIDTH, this->height() - 2 * SHADOW_WIDTH), QBrush(Qt::white));
+
+    QColor color(50, 50, 50, 30);
+    for (int i = 0; i < SHADOW_WIDTH; i++)
     {
-        for(int j = 0; j < col; ++j)
-        {
-//            pTmpLayout->addWidget(mvpElements[i*col+j], i, j);
-            pTmpLayout->addWidget(new mf::OwnElement(path, title, author), i, j);
-        }
+        color.setAlpha(120 - qSqrt(i) * 40);
+        painter.setPen(color);
+        // 圆角阴影边框;
+        painter.drawRoundedRect(SHADOW_WIDTH - i, SHADOW_WIDTH - i,
+                                this->width() - (SHADOW_WIDTH - i) * 2,
+                                this->height() - (SHADOW_WIDTH - i) * 2, 4, 4);
     }
-    pTmpLayout->setMargin(5);
-    auto container = new QFrame();
-    container->setLayout(pTmpLayout);
-    return container;
 }
 
-void MainWindow::on_btn1_clicked()
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
 {
-    mpStackedView->nextWidget();
+    if (event->buttons() & Qt::LeftButton)
+    {
+        if(mDragPos.y() > mpMainWidget->getTopRealSzie().height())
+            return;
+        auto desktopRc = QApplication::desktop()->availableGeometry();
+        auto curPoint = event->globalPos() - mDragPos;
+        if (event->globalY() > desktopRc.height())
+        {
+            curPoint.setY(desktopRc.height() - mDragPos.y());
+        }
+        this->move(curPoint);
+    }
+    QWidget::mouseMoveEvent(event);
 }
 
-void MainWindow::on_btn2_clicked()
+void MainWindow::mousePressEvent(QMouseEvent*event)
 {
-    mpStackedView->previousWidget();
-}
-
-void MainWindow::on_btn3_clicked()
-{
-
+    if (event->button() == Qt::LeftButton)
+    {
+        mDragPos = QCursor::pos() - frameGeometry().topLeft();
+    }
+    QWidget::mousePressEvent(event);
 }
 
 MainWindow::~MainWindow()

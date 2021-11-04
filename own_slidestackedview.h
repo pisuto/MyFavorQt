@@ -1,5 +1,5 @@
-#ifndef OWN_STACKEDVIEW_H
-#define OWN_STACKEDVIEW_H
+#ifndef OWN_SLIDESTACKEDVIEW_H
+#define OWN_SLIDESTACKEDVIEW_H
 
 #include <QStackedWidget>
 #include <QVariant>
@@ -12,12 +12,12 @@ class QPropertyAnimation;
 // https://github.com/NoHearting/MySelfQQ_v2/blob/419bf3981ccf0e0c9f4c8bf7d6330e85beadd59c/feature_widgets/AnimationStackedWidget.h
 namespace mf {
 
-class OwnStackedView : public QStackedWidget
+class OwnSlideStackedView : public QStackedWidget
 {
     Q_OBJECT
 public:
-    explicit OwnStackedView(QWidget* parent = nullptr);
-    virtual ~OwnStackedView() {}
+    explicit OwnSlideStackedView(QWidget* parent = nullptr);
+    virtual ~OwnSlideStackedView() {}
 
     void nextWidget();
     void previousWidget();
@@ -44,8 +44,6 @@ private:
     quint8 mNextIdx;
     bool mbIsLeft;
     bool mbIsAnimation;
-
-//    QThread* mpOwnThread;
 
 };
 

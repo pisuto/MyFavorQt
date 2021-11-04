@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/svgtopng/manga.png</file>
+        <file>images/svgtopng/movie.png</file>
+        <file>images/svgtopng/music.png</file>
+        <file>images/svgtopng/photos.png</file>
+        <file>images/svgtopng/undo.png</file>
+        <file>images/svgtopng/anime.png</file>
+        <file>images/svgtopng/setting.png</file>
+        <file>images/windows/close-pressed.png</file>
+        <file>images/windows/close.png</file>
+        <file>images/windows/min-pressed.png</file>
+        <file>images/windows/min.png</file>
+    </qresource>
+</RCC>
