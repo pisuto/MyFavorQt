@@ -5,6 +5,8 @@
 #include <QVariant>
 #include <QThread>
 
+#include "item_upload_window/own_itemuploadview.h"
+
 class QPainter;
 class QWidget;
 class QPropertyAnimation;
@@ -19,13 +21,15 @@ public:
     explicit OwnSlideStackedView(QWidget* parent = nullptr);
     virtual ~OwnSlideStackedView() {}
 
-    void nextWidget();
-    void previousWidget();
+    void nextWidget(int nxtIdx);
     void setDuration(quint16 dura) { mDuration = dura; }
 
 public slots:
     void valueChangedAnimation(QVariant value);
     void animationFininshed();
+
+    void deleteOperAction();
+    void addOperAction();
 
 protected:
     void paintEvent(QPaintEvent* event);
@@ -35,6 +39,7 @@ private:
     void paintNext(QPainter& painter, int index);
 
     void startAnimation(int index);
+    void initRightMenu();
 
 private:
     QPropertyAnimation* mpAnime;
@@ -45,6 +50,7 @@ private:
     bool mbIsLeft;
     bool mbIsAnimation;
 
+    OwnItemUploadView* mpUploadView;
 };
 
 }

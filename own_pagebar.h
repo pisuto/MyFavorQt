@@ -15,7 +15,7 @@ class OwnPageBar : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OwnPageBar(int blockSize = 3, QWidget* parent = nullptr);
+    explicit OwnPageBar(int maxPages = 1, int blockSize = 3, QWidget* parent = nullptr);
     ~OwnPageBar() { }
 
     int getBlockSize() const;

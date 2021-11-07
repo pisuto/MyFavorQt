@@ -13,6 +13,7 @@ class oobject
 {
 public:
     using value_type = T;
+    using reference_type = T&;
 
 public:
     explicit oobject(value_type val, QString name) : content(val), typeName(name) {}
@@ -29,8 +30,9 @@ private:
     QString typeName;
 };
 
-struct odbitem
+class odbitem
 {
+public:
     odbitem() :
         id(SQL_TABLE_ITEM::ITEM_ID),
         title(SQL_TABLE_ITEM::ITEM_TITLE),
@@ -38,7 +40,9 @@ struct odbitem
         desc(SQL_TABLE_ITEM::ITEM_DESC),
         label(SQL_TABLE_ITEM::ITEM_LABEL),
         path(SQL_TABLE_ITEM::ITEM_IMAGEPATH),
-        category(SQL_TABLE_ITEM::ITEM_CATEGORY)
+        category(SQL_TABLE_ITEM::ITEM_CATEGORY),
+        create_year(SQL_TABLE_ITEM::ITEM_CRATEYEAR),
+        init_time(SQL_TABLE_ITEM::ITEM_INITTIME)
     {}
 
     oobject<int>     id;
@@ -48,6 +52,8 @@ struct odbitem
     oobject<int>     label;
     oobject<QString> path;
     oobject<int>     category;
+    oobject<int>     create_year;
+    oobject<QString> init_time;
 
     friend QDebug operator<< (QDebug out, const odbitem& item)
     {
@@ -57,7 +63,9 @@ struct odbitem
             << item.desc.type_name() << ": " << item.desc.value() << "\n"
             << item.label.type_name() << ": " << item.label.value() << "\n"
             << item.path.type_name() << ": " << item.path.value() << "\n"
-            << item.category.type_name() << ": " << item.category.value() << "\n";
+            << item.category.type_name() << ": " << item.category.value() << "\n"
+            << item.create_year.type_name() << ": " << item.create_year.value() << "\n"
+            << item.init_time.type_name() << ": " << item.init_time.value() << "\n";
         return out;
     }
 };

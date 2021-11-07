@@ -13,7 +13,7 @@ namespace mf {
 
 namespace mf {
 
-class OwnDatabase
+class OwnDatabase : public OwnSingleton<OwnDatabase>
 {
 public:
     OwnDatabase();
@@ -21,6 +21,8 @@ public:
 
     void insert(odbitem& item);
     void select(odbitem& item);
+    int categoryCount(SQL_ITEM_CATEGORY category);
+
 
     template<typename T, typename ...Args>
     void bindValues(T& type, Args&... args)

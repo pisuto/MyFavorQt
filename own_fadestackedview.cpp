@@ -1,4 +1,5 @@
 #include "own_fadestackedview.h"
+#include "own_slidestackedview.h"
 
 #include <QPainter>
 #include <QPropertyAnimation>
@@ -8,7 +9,7 @@
 
 namespace mf {
 
-OwnFadeStackedView::OwnFadeStackedView(QWidget* parent) :
+OwnFadeStackedView::OwnFadeStackedView(OwnPageBar* pageBar, QWidget* parent) :
     QStackedWidget (parent),
     mpEffect(new QGraphicsOpacityEffect(this)),
     mpAnimeAlpha(new QPropertyAnimation(mpEffect, "opacity")),
@@ -20,20 +21,21 @@ OwnFadeStackedView::OwnFadeStackedView(QWidget* parent) :
     mNextIdx(0),
     mCurrIdx(0),
     mStartColor(parent ? parent->palette().window().color() : Qt::white),
-    mbIsAnimation(false)
+    mbIsAnimation(false),
+    mpPageBar(pageBar)
 {
     mpAnimeGrp->addAnimation(mpAnimeAlpha);
     mpAnimeGrp->addAnimation(mpAnimePos);
 
     connect(mpAnimeAlpha, &QPropertyAnimation::valueChanged, this, &OwnFadeStackedView::valueChangedAnimation);
     connect(mpAnimeAlpha, &QPropertyAnimation::finished, this, &OwnFadeStackedView::animationFininshed);
+    connect(mpPageBar, &OwnPageBar::currentPageChanged, this, &OwnFadeStackedView::switchPage);
 }
 
 void OwnFadeStackedView::switchWidget(int index)
 {
     if(mbIsAnimation || index == mNextIdx)
         return;
-
     startAnimation(index);
 }
 
@@ -92,6 +94,13 @@ void OwnFadeStackedView::startAnimation(int index)
     mNextIdx = static_cast<quint8>(index);
     this->currentWidget()->hide();
     this->setCurrentIndex(mNextIdx);
+    // 初始化子页面
+    if(mpPageBar)
+    {
+        auto pView = qobject_cast<OwnSlideStackedView*>(this->currentWidget());
+        pView->setCurrentIndex(0);    // index
+        mpPageBar->setCurrentPage(1); // index + 1
+    }
 
     this->widget(mNextIdx)->setGraphicsEffect(mpEffect);
     mpAnimeAlpha->setDuration(mDuration / 2);
@@ -107,6 +116,14 @@ void OwnFadeStackedView::startAnimation(int index)
     mpAnimePos->setEasingCurve(QEasingCurve::OutExpo);
 
     mpAnimeGrp->start();
+}
+
+void OwnFadeStackedView::switchPage(int page)
+{
+    auto pView = qobject_cast<OwnSlideStackedView*>(this->currentWidget());
+    if(!pView)
+        return;
+    pView->nextWidget(page - 1);
 }
 
 }

@@ -4,6 +4,8 @@
 #include <QStackedWidget>
 #include <QVariant>
 
+#include "own_pagebar.h"
+
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 class QGraphicsOpacityEffect;
@@ -14,7 +16,7 @@ class OwnFadeStackedView : public QStackedWidget
 {
     Q_OBJECT
 public:
-    explicit OwnFadeStackedView(QWidget* parent = nullptr);
+    explicit OwnFadeStackedView(OwnPageBar* pageBar, QWidget* parent = nullptr);
     ~OwnFadeStackedView() {}
 
     void initAnimationEffect();
@@ -33,6 +35,7 @@ private:
 //    void paintNext(QPainter& painter, int index);
 
     void startAnimation(int index);
+    void switchPage(int page);
 
 private:
     QGraphicsOpacityEffect* mpEffect;
@@ -47,6 +50,8 @@ private:
     QColor mStartColor;
     bool mbIsAnimation;
 
+    // 切换页面
+    OwnPageBar* mpPageBar;
 };
 
 }

@@ -27,7 +27,7 @@ public:
     Q_OBJECT
 public:
     explicit OwnMainWidget(QWidget *parent = nullptr);
-    ~OwnMainWidget() {}
+    ~OwnMainWidget() override {}
 
     QFrame* createContainer(QString path, QString title, QString author, QString desc);
     QSize getTopRealSzie() const { return QSize(mpTopBtns->x() + mpTopBtns->width(), mpTopBtns->y() + mpTopBtns->height()); }
@@ -50,6 +50,7 @@ private:
     mf::OwnFadeStackedView* mpStackedView;
     mf::OwnButtonGroup* mpBtnGrp;
     mf::OwnPageBar* mpPageBar;
+    QMenu* mpMenu;
 
     mf::OwnTopButtonGroup* mpTopBtns;
 };

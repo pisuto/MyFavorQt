@@ -34,10 +34,12 @@ SOURCES += \
         own_fadestackedview.cpp \
         own_mainwidget.cpp \
         own_pagebar.cpp \
-        own_slidestackedview.cpp
+        own_slidestackedview.cpp \
+        item_upload_window/own_itemuploadview.cpp \
 
 HEADERS += \
         MainWindow.h \
+        item_upload_window/own_itemuploadview.h \
         own_button.h \
         own_config.h \
         own_database.h \
@@ -50,7 +52,8 @@ HEADERS += \
         own_util.h
 
 FORMS += \
-        MainWindow.ui
+        MainWindow.ui \
+        OwnItemUploadView.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

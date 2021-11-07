@@ -7,8 +7,59 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include <QLabel>
+#include <QStandardPaths>
+#include <QDir>
+
+#include <QDebug>
 
 namespace mf {
+
+// 标签类型
+enum class SQL_ITEM_CATEGORY
+{
+    ANIME = 1,
+    MANGA = 2,
+    MOVIE = 3,
+    MUSIC = 4,
+    PHOTO = 5,
+    COUNT,
+};
+
+enum class SQL_PAGE_ITEM_GRID
+{
+    ROW   = 3,
+    COL   = 3,
+    COUNT = ROW * COL,
+};
+
+// sql相关全局数据
+struct SQL_TABLE_ITEM
+{
+    static const QString ITEM_DATABASE_NAME;
+    static const QString ITEM_TABLE_NAME;
+    static const QString ITEM_ID;
+    static const QString ITEM_TITLE;
+    static const QString ITEM_AUTHOR;
+    static const QString ITEM_DESC;
+    static const QString ITEM_LABEL;
+    static const QString ITEM_IMAGEPATH;
+    static const QString ITEM_CATEGORY;
+    static const QString ITEM_CRATEYEAR;
+    static const QString ITEM_INITTIME;
+
+    static QString ImgFileLocation() { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/MyFavor"; }
+    static QString Placeholder(const QString& item) { return ":" + item; }
+};
+
+struct SQL_SYNTAX
+{
+    static const QString CREATE_ITEM_TABLE_SQL;
+    static const QString INSERT_ITEM_SQL;
+    static const QString SELECT_ITEM_SQL;
+    static const QString UPDATE_ITEM_SQL;
+    static const QString DELETE_ITEM_SQL;
+    static const QString QUERY_ITEM_CNT_BY_CATEGORY;
+};
 
 // 单例模式基类
 template<typename T>
@@ -51,20 +102,9 @@ public:
     OwnConfig() {}
     ~OwnConfig() {}
 
-    void initConfig()
-    {
-        // 计算每一元素的大小
-        auto pScreen = QGuiApplication::primaryScreen();
-        mElement.setWidth(pScreen->size().width()*1/3*1/4);
-        mElement.setHeight(mElement.width()*2);
+    void initConfig();
 
-        // 设置标题font
-        QFont font("Microsoft YaHei", 10, QFont::Bold);
-        QPalette pale;
-        pale.setColor(QPalette::WindowText, Qt::white);
-    }
-
-    QSize getElementSize() const { return mElement; }
+    const QSize getElementSize() const { return mElement; }
 
     void setTitleStyle(QLabel* pTitle)
     {
@@ -81,34 +121,12 @@ public:
         pLabel->setFont(font);
     }
 
+    const QVector<int>& getPages() const { return mPageCount; }
+    void updatePages(SQL_ITEM_CATEGORY category);
+
 private:
     QSize mElement;
-
-};
-
-// sql相关全局数据
-struct SQL_TABLE_ITEM
-{
-    static const QString ITEM_DATABASE_NAME;
-    static const QString ITEM_TABLE_NAME;
-    static const QString ITEM_ID;
-    static const QString ITEM_TITLE;
-    static const QString ITEM_AUTHOR;
-    static const QString ITEM_DESC;
-    static const QString ITEM_LABEL;
-    static const QString ITEM_IMAGEPATH;
-    static const QString ITEM_CATEGORY;
-
-    static QString Placeholder(const QString& item) { return ":" + item; }
-};
-
-struct SQL_SYNTAX
-{
-    static const QString CREATE_ITEM_TABLE_SQL;
-    static const QString INSERT_ITEM_SQL;
-    static const QString SELECT_ITEM_SQL;
-    static const QString UPDATE_ITEM_SQL;
-    static const QString DELETE_ITEM_SQL;
+    QVector<int> mPageCount;
 };
 
 }

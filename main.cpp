@@ -27,14 +27,15 @@ int main(int argc, char *argv[])
     auto spConfig = mf::OwnConfig::getInstance();
     spConfig->initConfig();
 
-
-    // for test
+#if 0
     mf::odbitem item;
-    item.id.value(1);
-    item.title.value("hello world");
+    item.id = 1;
+    item.create_year = 2011;
+    item.title = "no";
     mf::OwnDatabase db;
     db.insert(item);
     db.select(item);
+#endif
 
     MainWindow w;
     w.show();

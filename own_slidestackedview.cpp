@@ -3,13 +3,16 @@
 #include <QPropertyAnimation>
 #include <QPainter>
 #include <QByteArray>
+#include <QAction>
 
 namespace mf {
 
 OwnSlideStackedView::OwnSlideStackedView(QWidget* parent) : QStackedWidget (parent),
   mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mbIsLeft(true),
-  mbIsAnimation(false)
+  mbIsAnimation(false),
+  mpUploadView(new OwnItemUploadView())
 {
+    initRightMenu();
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);
     connect(mpAnime, &QPropertyAnimation::finished, this, &OwnSlideStackedView::animationFininshed);
 }
@@ -27,26 +30,15 @@ void OwnSlideStackedView::animationFininshed()
     this->setCurrentIndex(mNextIdx);
 }
 
-void OwnSlideStackedView::nextWidget()
+void OwnSlideStackedView::nextWidget(int nxtIdx)
 {
     if(mbIsAnimation)
         return;
-    mbIsLeft = true;
     mWidgetCnt = this->count();
-    int index = this->currentIndex();
-    mNextIdx = (index + 1) % mWidgetCnt;
-    startAnimation(index);
-}
-
-void OwnSlideStackedView::previousWidget()
-{
-    if(mbIsAnimation)
-        return;
-    mbIsLeft = false;
-    mWidgetCnt = this->count();
-    int index = this->currentIndex();
-    mNextIdx = (index - 1 + mWidgetCnt) % mWidgetCnt;
-    startAnimation(index);
+    int curIdx = this->currentIndex();
+    mbIsLeft = curIdx < nxtIdx;
+    mNextIdx = nxtIdx;
+    startAnimation(curIdx);
 }
 
 void OwnSlideStackedView::startAnimation(int index)
@@ -111,6 +103,37 @@ void OwnSlideStackedView::paintNext(QPainter &painter, int index)
         painter.drawPixmap(r2, nextPixmap, r1);
     }
 }
+
+void OwnSlideStackedView::initRightMenu()
+{
+    {
+        auto action = new QAction(this);
+        action->setText("add");
+        connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
+                this, &OwnSlideStackedView::addOperAction);
+        this->addAction(action);
+    }
+    {
+        auto action = new QAction(this);
+        action->setText("delete");
+        connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
+                this, &OwnSlideStackedView::deleteOperAction);
+        this->addAction(action);
+    }
+
+    this->setContextMenuPolicy(Qt::ActionsContextMenu);
+}
+
+void OwnSlideStackedView::deleteOperAction()
+{
+
+}
+
+void OwnSlideStackedView::addOperAction()
+{
+    mpUploadView->show();
+}
+
 
 
 }

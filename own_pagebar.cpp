@@ -12,7 +12,7 @@
 
 namespace mf {
 
-OwnPageBar::OwnPageBar(int blockSize, QWidget* parent) : QWidget(parent),
+OwnPageBar::OwnPageBar(int maxPages, int blockSize, QWidget* parent) : QWidget(parent),
     mMaxPage(0),
     mpPrePageLabel(new QLabel),
     mpNxtPageLabel(new QLabel),
@@ -28,7 +28,7 @@ OwnPageBar::OwnPageBar(int blockSize, QWidget* parent) : QWidget(parent),
 {
     setBlockSize(blockSize);
     initialize();
-    setMaxPage(30);
+    setMaxPage(maxPages);
 
     // 配置layout
     mpLayout->addStretch(1);
