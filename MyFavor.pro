@@ -25,6 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    item_upload_window/own_itemuploadform.cpp \
+    item_upload_window/own_screencapture.cpp \
         main.cpp \
         MainWindow.cpp \
         own_button.cpp \
@@ -39,7 +41,9 @@ SOURCES += \
 
 HEADERS += \
         MainWindow.h \
+        item_upload_window/own_itemuploadform.h \
         item_upload_window/own_itemuploadview.h \
+        item_upload_window/own_screencapture.h \
         own_button.h \
         own_config.h \
         own_database.h \

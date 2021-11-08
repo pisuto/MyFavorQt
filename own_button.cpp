@@ -9,9 +9,9 @@
 
 namespace mf {
 
-OwnButtonGroup::OwnButtonGroup(QWidget* parent) : QWidget(parent),
+OwnButtonGroup::OwnButtonGroup(int startPos, QWidget* parent) : QWidget(parent),
     mpAnime(new QPropertyAnimation(this, QByteArray())), mpLayout(new QHBoxLayout),
-    mCurIdx(0), mPreIdx(0), mCurrVal(40), mBtnSize(QSize()), mLineHeight(3),
+    mCurIdx(0), mPreIdx(0), mCurrVal(startPos), mBtnSize(QSize()), mLineHeight(3),
     mLineColor(QColor(20, 20, 20))
 {
     mpAnime->setDuration(300);

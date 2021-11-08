@@ -29,7 +29,8 @@ OwnFadeStackedView::OwnFadeStackedView(OwnPageBar* pageBar, QWidget* parent) :
 
     connect(mpAnimeAlpha, &QPropertyAnimation::valueChanged, this, &OwnFadeStackedView::valueChangedAnimation);
     connect(mpAnimeAlpha, &QPropertyAnimation::finished, this, &OwnFadeStackedView::animationFininshed);
-    connect(mpPageBar, &OwnPageBar::currentPageChanged, this, &OwnFadeStackedView::switchPage);
+    if(mpPageBar)
+        connect(mpPageBar, &OwnPageBar::currentPageChanged, this, &OwnFadeStackedView::switchPage);
 }
 
 void OwnFadeStackedView::switchWidget(int index)

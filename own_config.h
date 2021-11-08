@@ -17,6 +17,7 @@ namespace mf {
 // 标签类型
 enum class SQL_ITEM_CATEGORY
 {
+    EMPTY = 0,
     ANIME = 1,
     MANGA = 2,
     MOVIE = 3,
@@ -49,6 +50,24 @@ struct SQL_TABLE_ITEM
 
     static QString ImgFileLocation() { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/MyFavor"; }
     static QString Placeholder(const QString& item) { return ":" + item; }
+    static QString CategoryToString(SQL_ITEM_CATEGORY index)  {
+        switch (index)
+        {
+        case SQL_ITEM_CATEGORY::ANIME:
+            return "Anime";
+        case SQL_ITEM_CATEGORY::MANGA:
+            return  "Manga";
+        case SQL_ITEM_CATEGORY::MOVIE:
+            return "Movie";
+        case SQL_ITEM_CATEGORY::MUSIC:
+            return "Music";
+        case SQL_ITEM_CATEGORY::PHOTO:
+            return "Photo";
+        default:
+            return "Null";
+
+        }
+    }
 };
 
 struct SQL_SYNTAX

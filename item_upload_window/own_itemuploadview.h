@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#include "own_button.h"
+#include "own_fadestackedview.h"
+#include "own_itemuploadform.h"
+
 namespace Ui {
 class OwnItemUploadView;
 }
@@ -17,8 +21,20 @@ public:
     explicit OwnItemUploadView(QWidget *parent = nullptr);
     ~OwnItemUploadView();
 
+private slots:
+    void onBtnScrClicked();
+    void onBtnDocClicked();
+
+private:
+    QFrame *createForm(bool isScreenCaptrue);
+
 private:
     Ui::OwnItemUploadView *ui;
+
+    OwnButtonGroup* mpBtnGrp;
+    OwnFadeStackedView* mpStackedView;
+
+    QVBoxLayout* mpMainLayout;
 };
 
 }

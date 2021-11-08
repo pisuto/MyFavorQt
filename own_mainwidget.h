@@ -50,7 +50,6 @@ private:
     mf::OwnFadeStackedView* mpStackedView;
     mf::OwnButtonGroup* mpBtnGrp;
     mf::OwnPageBar* mpPageBar;
-    QMenu* mpMenu;
 
     mf::OwnTopButtonGroup* mpTopBtns;
 };

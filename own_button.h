@@ -53,7 +53,7 @@ class OwnButtonGroup : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OwnButtonGroup(QWidget* parent = nullptr);
+    explicit OwnButtonGroup(int startPos, QWidget* parent = nullptr);
     ~OwnButtonGroup() {}
 
     void initButtonConnect();

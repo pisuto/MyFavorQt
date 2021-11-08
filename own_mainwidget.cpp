@@ -9,9 +9,8 @@ namespace mf {
 
 OwnMainWidget::OwnMainWidget(QWidget *parent) :
     QFrame(parent),
-    mpBtnGrp(new mf::OwnButtonGroup(this)),
-    mpTopBtns(new mf::OwnTopButtonGroup(parent)),
-    mpMenu(new QMenu(this))
+    mpBtnGrp(new mf::OwnButtonGroup(40, this)),
+    mpTopBtns(new mf::OwnTopButtonGroup(parent))
 {
     // 创建layout
     pMainLayout = new QVBoxLayout();
