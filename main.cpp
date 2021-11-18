@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 #endif
 
     MainWindow w;
+    spConfig->setMainWindowPtr(&w);
     w.show();
 
     return a.exec();

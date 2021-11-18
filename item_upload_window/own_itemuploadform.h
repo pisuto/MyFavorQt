@@ -3,7 +3,8 @@
 
 #include <QFrame>
 
-#include "item_upload_window/own_screencapture.h"
+#include "own_screencapture.h"
+#include "own_imageviewer.h"
 
 class QVBoxLayout;
 class QLineEdit;
@@ -17,7 +18,10 @@ class OwnItemUploadForm : public QFrame
 {
     Q_OBJECT
 public:
-    explicit OwnItemUploadForm(bool screenMethod = false, QWidget* parent = nullptr);
+    explicit OwnItemUploadForm(QWidget* parent = Q_NULLPTR);
+
+private:
+    void chooseImageDialog();
 
 private:
     QVBoxLayout* mpLayout;
@@ -33,13 +37,14 @@ private:
     QComboBox* mpCategoryEdit;
     QLineEdit* mpYearEdit;
 
-    QLabel* mpImage;
+    QLabel* mpCrop;
     QPushButton* mpStartCapBtn;
+    QPushButton* mpUploadImgBtn;
+    QPushButton* mpApplyBtn;
 
-    bool mbImgMethod; /* 默认false是截图 */
-
+    OwnImageViewer* mpViewer;
     OwnScreenCapture* mpCaptrue;
-
+    QDialog* mpParent;
 };
 
 }

@@ -1,32 +1,32 @@
 #include "item_upload_window/own_itemuploadview.h"
 #include "ui_OwnItemUploadView.h"
 
+#include <QPainter>
+
 namespace mf {
 
 OwnItemUploadView::OwnItemUploadView(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::OwnItemUploadView),
     mpBtnGrp(new OwnButtonGroup(0)),
     mpStackedView(new OwnFadeStackedView(Q_NULLPTR, this)),
-    mpMainLayout(new QVBoxLayout)
+    mpMainLayout(new QVBoxLayout),
+    mDragPos(QPoint(0, 0))
 {
     ui->setupUi(this);
-    this->setWindowFlags(Qt::FramelessWindowHint); //无边框
+
+    this->setAttribute(Qt::WA_TranslucentBackground);
+    this->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
 
     auto screenCaptureBtn =
-            new OwnButton(0, QIcon(":/images/svgtopng/anime.png"), "Screen");
-    auto imageUploadBtn =
-            new OwnButton(1, QIcon(":/images/svgtopng/photos.png"), "Document");
+            new OwnButton(0, QIcon(":/images/svgtopng/anime.png"), "New Item");
     connect(screenCaptureBtn, &QPushButton::clicked, this, &OwnItemUploadView::onBtnScrClicked);
-    connect(imageUploadBtn, &QPushButton::clicked, this, &OwnItemUploadView::onBtnDocClicked);
     mpBtnGrp->addButton(screenCaptureBtn);
-    mpBtnGrp->addButton(imageUploadBtn);
     mpBtnGrp->addStretch(1);
     mpBtnGrp->initButtonConnect();
 
     // 初始化选择界面
-    mpStackedView->addWidget(createForm(false));
-    mpStackedView->addWidget(createForm(true));
+    mpStackedView->addWidget(new OwnItemUploadForm(this));
 
     // 设置末尾的保存和取消按钮
     auto pSaveBtn = new QPushButton();
@@ -64,9 +64,43 @@ void OwnItemUploadView::onBtnDocClicked()
     mpStackedView->switchWidget(1);
 }
 
-QFrame *OwnItemUploadView::createForm(bool isScreenCaptrue)
+void OwnItemUploadView::paintEvent(QPaintEvent *e)
 {
-    return new OwnItemUploadForm(isScreenCaptrue);
+    Q_UNUSED(e)
+    // 绘制圆角
+    QPainter p(this);
+    p.setPen(Qt::NoPen);
+    p.setBrush(QBrush(QColor(0, 0, 0, 0)));
+    p.drawRect(rect());
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setBrush(palette().color(QPalette::Window));
+    p.drawRoundedRect(0, 0, width() - 1, height() - 1, 6, 6);
+}
+
+void OwnItemUploadView::mouseMoveEvent(QMouseEvent* event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        if(mDragPos.y() > static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT) / 10)
+            return;
+        auto desktopRc = QApplication::desktop()->availableGeometry();
+        auto curPoint = event->globalPos() - mDragPos;
+        if (event->globalY() > desktopRc.height())
+        {
+            curPoint.setY(desktopRc.height() - mDragPos.y());
+        }
+        this->move(curPoint);
+    }
+    QWidget::mouseMoveEvent(event);
+}
+
+void OwnItemUploadView::mousePressEvent(QMouseEvent*event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        mDragPos = QCursor::pos() - frameGeometry().topLeft();
+    }
+    QWidget::mousePressEvent(event);
 }
 
 }

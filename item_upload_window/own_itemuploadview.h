@@ -2,6 +2,7 @@
 #define OWN_ITEMUPLOADVIEW_H
 
 #include <QWidget>
+#include <QDialog>
 
 #include "own_button.h"
 #include "own_fadestackedview.h"
@@ -13,28 +14,30 @@ class OwnItemUploadView;
 
 namespace mf {
 
-class OwnItemUploadView : public QWidget
+class OwnItemUploadView : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit OwnItemUploadView(QWidget *parent = nullptr);
-    ~OwnItemUploadView();
+    ~OwnItemUploadView() override ;
 
 private slots:
     void onBtnScrClicked();
     void onBtnDocClicked();
 
-private:
-    QFrame *createForm(bool isScreenCaptrue);
+protected:
+    void paintEvent(QPaintEvent* e) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent*event) override;
 
 private:
     Ui::OwnItemUploadView *ui;
 
     OwnButtonGroup* mpBtnGrp;
     OwnFadeStackedView* mpStackedView;
-
     QVBoxLayout* mpMainLayout;
+    QPoint mDragPos;
 };
 
 }

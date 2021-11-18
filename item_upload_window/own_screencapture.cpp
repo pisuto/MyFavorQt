@@ -1,4 +1,5 @@
 #include "own_screencapture.h"
+#include "own_config.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -12,8 +13,6 @@
 
 namespace mf {
 
-#define STRDATETIME qPrintable (QDateTime::currentDateTime().toString("yyyy-MM-dd-HH-mm-ss"))
-
 void OwnScreen::move(QPoint p)
 {
     int lx = leftUpPos.x() + p.x();
@@ -22,25 +21,24 @@ void OwnScreen::move(QPoint p)
     int ry = rightDownPos.y() + p.y();
 
     if (lx < 0) {
+        rx = width;
         lx = 0;
-        rx -= p.x();
     }
 
     if (ly < 0) {
+        ry = height;
         ly = 0;
-        ry -= p.y();
     }
 
     if (rx > maxWidth)  {
+        lx = maxWidth - width;
         rx = maxWidth;
-        lx -= p.x();
     }
 
     if (ry > maxHeight) {
+        ly = maxHeight - height;
         ry = maxHeight;
-        ly -= p.y();
     }
-
     leftUpPos = QPoint(lx, ly);
     rightDownPos = QPoint(rx, ry);
     startPos = leftUpPos;
@@ -64,23 +62,22 @@ void OwnScreen::cmpPoint(QPoint &leftTop, QPoint &rightDown)
             leftTop.setX(r.x());
             rightDown.setX(l.x());
         } else {
-            QPoint tmp;
-            tmp = leftTop;
-            leftTop = rightDown;
-            rightDown = tmp;
+            qSwap(leftTop, rightDown);
         }
     }
+    // 设置方框的大小便于移动
+    width  = qAbs(rightDown.x() - leftTop.x());
+    height = qAbs(rightDown.y() - leftTop.y());
 }
 
 /*********************************************************************/
 
-OwnScreenCapture::OwnScreenCapture(QWidget* parent) : QWidget(parent)
+OwnScreenCapture::OwnScreenCapture(OwnImageViewer* viewer, QWidget* parent) :
+    QWidget(parent),
+    mpViewer(viewer)
 {
     menu = new QMenu(this);
-    menu->addAction("Save screen", this, SLOT(saveScreen()));
-    menu->addAction("Save full-screen", this, SLOT(saveFullScreen()));
-    menu->addAction("Save screen as ...", this, SLOT(saveScreenOther()));
-    menu->addAction("Save full-screen as ...", this, SLOT(saveFullOther()));
+    menu->addAction("Save crop", this, SLOT(saveScreen()));
     menu->addAction("Exit", this, SLOT(hide()));
 
     //取得屏幕大小
@@ -99,41 +96,41 @@ void OwnScreenCapture::mousePressEvent(QMouseEvent *e)
 {
     int status = screen->getStatus();
 
-        if (status == OwnScreen::SELECT) {
+    if (status == OwnScreen::SELECT) {
+        screen->setStart(e->pos());
+    } else if (status == OwnScreen::MOV) {
+        if (screen->isInArea(e->pos()) == false) {
             screen->setStart(e->pos());
-        } else if (status == OwnScreen::MOV) {
-            if (screen->isInArea(e->pos()) == false) {
-                screen->setStart(e->pos());
-                screen->setStatus(OwnScreen::SELECT);
-            } else {
-                movPos = e->pos();
-                this->setCursor(Qt::SizeAllCursor);
-            }
+            screen->setStatus(OwnScreen::SELECT);
+        } else {
+            movPos = e->pos();
+            this->setCursor(Qt::SizeAllCursor);
         }
+    }
 
-        this->update();
+    this->update();
 }
 
 void OwnScreenCapture::mouseMoveEvent(QMouseEvent *e)
 {
     if (screen->getStatus() == OwnScreen::SELECT) {
-            screen->setEnd(e->pos());
-        } else if (screen->getStatus() == OwnScreen::MOV) {
-            QPoint p(e->x() - movPos.x(), e->y() - movPos.y());
-            screen->move(p);
-            movPos = e->pos();
-        }
+        screen->setEnd(e->pos());
+    } else if (screen->getStatus() == OwnScreen::MOV) {
+        QPoint p(e->x() - movPos.x(), e->y() - movPos.y());
+        screen->move(p);
+        movPos = e->pos();
+    }
 
-        this->update();
+    this->update();
 }
 
 void OwnScreenCapture::mouseReleaseEvent(QMouseEvent *)
 {
     if (screen->getStatus() == OwnScreen::SELECT) {
-            screen->setStatus(OwnScreen::MOV);
-        } else if (screen->getStatus() == OwnScreen::MOV) {
-            this->setCursor(Qt::ArrowCursor);
-        }
+        screen->setStatus(OwnScreen::MOV);
+    } else if (screen->getStatus() == OwnScreen::MOV) {
+        this->setCursor(Qt::ArrowCursor);
+    }
 }
 
 void OwnScreenCapture::paintEvent(QPaintEvent *)
@@ -160,7 +157,7 @@ void OwnScreenCapture::paintEvent(QPaintEvent *)
 
     pen.setColor(Qt::yellow);
     painter.setPen(pen);
-    painter.drawText(x + 2, y - 8, tr("截图范围：( %1 x %2 ) - ( %3 x %4 )  图片大小：( %5 x %6 )")
+    painter.drawText(x + 2, y - 8, tr("Crop:( %1 x %2 ) - ( %3 x %4 )  Image:( %5 x %6 )")
                      .arg(x).arg(y).arg(x + w).arg(y + h).arg(w).arg(h));
 }
 
@@ -171,14 +168,14 @@ void OwnScreenCapture::showEvent(QShowEvent *)
     screen->setEnd(point);
 
 #if (QT_VERSION <= QT_VERSION_CHECK(5,0,0))
-    *fullScreen = fullScreen->grabWindow(QApplication::desktop()->winId(), 0, 0, screen->width(), screen->height());
+    *fullScreen = fullScreen->grabWindow(QApplication::desktop()->winId(), 0, 0, screen->getMaxWidth(), screen->getMaxHeight());
 #else
     QScreen *pscreen = QApplication::primaryScreen();
-    *fullScreen = pscreen->grabWindow(QApplication::desktop()->winId(), 0, 0, screen->width(), screen->height());
+    *fullScreen = pscreen->grabWindow(QApplication::desktop()->winId(), 0, 0, screen->getMaxWidth(), screen->getMaxHeight());
 #endif
 
     //设置透明度实现模糊背景
-    QPixmap pix(screen->width(), screen->height());
+    QPixmap pix(screen->getMaxWidth(), screen->getMaxHeight());
     pix.fill((QColor(160, 160, 160, 200)));
     bgScreen = new QPixmap(*fullScreen);
     QPainter p(bgScreen);
@@ -188,52 +185,12 @@ void OwnScreenCapture::showEvent(QShowEvent *)
 void OwnScreenCapture::saveScreen()
 {
     int x = screen->getLeftUp().x();
-        int y = screen->getLeftUp().y();
-        int w = screen->getRightDown().x() - x;
-        int h = screen->getRightDown().y() - y;
-
-        QString fileName = QString("%1/screen_%2.png").arg(qApp->applicationDirPath()).arg(STRDATETIME);
-        fullScreen->copy(x, y, w, h).save(fileName, "png");
-        close();
-}
-
-void OwnScreenCapture::saveFullScreen()
-{
-    QString fileName = QString("%1/full_%2.png").arg(qApp->applicationDirPath()).arg(STRDATETIME);
-        fullScreen->save(fileName, "png");
-        close();
-}
-
-void OwnScreenCapture::saveScreenOther()
-{
-    QString name = QString("%1.png").arg(STRDATETIME);
-        QString fileName = QFileDialog::getSaveFileName(this, "保存图片", name, "png Files (*.png)");
-        if (!fileName.endsWith(".png")) {
-            fileName += ".png";
-        }
-
-        if (fileName.length() > 0) {
-            int x = screen->getLeftUp().x();
-            int y = screen->getLeftUp().y();
-            int w = screen->getRightDown().x() - x;
-            int h = screen->getRightDown().y() - y;
-            fullScreen->copy(x, y, w, h).save(fileName, "png");
-            close();
-        }
-}
-
-void OwnScreenCapture::saveFullOther()
-{
-    QString name = QString("%1.png").arg(STRDATETIME);
-        QString fileName = QFileDialog::getSaveFileName(this, "保存图片", name, "png Files (*.png)");
-        if (!fileName.endsWith(".png")) {
-            fileName += ".png";
-        }
-
-        if (fileName.length() > 0) {
-            fullScreen->save(fileName, "png");
-            close();
-        }
+    int y = screen->getLeftUp().y();
+    int w = screen->getRightDown().x() - x;
+    int h = screen->getRightDown().y() - y;
+    mpViewer->setPixmap(fullScreen->copy(x, y, w, h));
+    OwnConfig::getInstance()->getMainWindowPtr()->showNormal();
+    this->close();
 }
 
 

@@ -14,6 +14,13 @@
 
 namespace mf {
 
+// 展示的图片大小
+enum class IMAGE_DISPLAY_SIZE
+{
+    WIDTH = 185,
+    HEIGHT = 300,
+};
+
 // 标签类型
 enum class SQL_ITEM_CATEGORY
 {
@@ -142,10 +149,13 @@ public:
 
     const QVector<int>& getPages() const { return mPageCount; }
     void updatePages(SQL_ITEM_CATEGORY category);
-
+    QSize getDisplayImageSize() const { return QSize(static_cast<int>(IMAGE_DISPLAY_SIZE::WIDTH), static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT)); }
+    QWidget* getMainWindowPtr() const { return mpMainWindow; }
+    void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
 private:
     QSize mElement;
     QVector<int> mPageCount;
+    QWidget* mpMainWindow;
 };
 
 }

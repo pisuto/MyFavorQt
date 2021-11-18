@@ -10,7 +10,7 @@ namespace mf {
 OwnSlideStackedView::OwnSlideStackedView(QWidget* parent) : QStackedWidget (parent),
   mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mbIsLeft(true),
   mbIsAnimation(false),
-  mpUploadView(new OwnItemUploadView())
+  mpUploadView(new OwnItemUploadView(this))
 {
     initRightMenu();
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);
@@ -131,7 +131,7 @@ void OwnSlideStackedView::deleteOperAction()
 
 void OwnSlideStackedView::addOperAction()
 {
-    mpUploadView->show();
+    mpUploadView->open(); // 仅阻塞父窗口
 }
 
 

@@ -46,7 +46,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 {
     if (event->buttons() & Qt::LeftButton)
     {
-        if(mDragPos.y() > mpMainWidget->getTopRealSzie().height())
+        if(mDragPos.y() > mpMainWidget->getTopRightDownPos().height())
             return;
         auto desktopRc = QApplication::desktop()->availableGeometry();
         auto curPoint = event->globalPos() - mDragPos;

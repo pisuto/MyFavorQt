@@ -11,5 +11,6 @@
         <file>images/windows/close.png</file>
         <file>images/windows/min-pressed.png</file>
         <file>images/windows/min.png</file>
+        <file>images/svgtopng/default.png</file>
     </qresource>
 </RCC>

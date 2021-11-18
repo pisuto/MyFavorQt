@@ -30,7 +30,7 @@ public:
     ~OwnMainWidget() override {}
 
     QFrame* createContainer(QString path, QString title, QString author, QString desc);
-    QSize getTopRealSzie() const { return QSize(mpTopBtns->x() + mpTopBtns->width(), mpTopBtns->y() + mpTopBtns->height()); }
+    QSize getTopRightDownPos() const { return QSize(mpTopBtns->geometry().x() + mpTopBtns->width(), mpTopBtns->geometry().y() + mpTopBtns->height()); }
 
 public slots:
     void on_btn2_clicked();
