@@ -1,5 +1,6 @@
 #include "own_config.h"
 #include "own_database.h"
+#include "item_upload_window/own_itemuploadview.h"
 
 namespace mf {
 
@@ -75,19 +76,24 @@ const QString SQL_SYNTAX::UPDATE_ITEM_SQL =
 
 const QString SQL_SYNTAX::DELETE_ITEM_SQL =
         "DELETE FROM " + SQL_TABLE_ITEM::ITEM_TABLE_NAME + " WHERE " +
-        SQL_TABLE_ITEM::ITEM_ID        + " = " +
+        SQL_TABLE_ITEM::ITEM_ID                          + " = " +
         SQL_TABLE_ITEM::Placeholder(SQL_TABLE_ITEM::ITEM_ID);
 
 const QString SQL_SYNTAX::QUERY_ITEM_CNT_BY_CATEGORY =
         "SELECT COUNT(" + SQL_TABLE_ITEM::ITEM_ID + ") " +
         "FROM " + SQL_TABLE_ITEM::ITEM_TABLE_NAME + " WHERE " +
-        SQL_TABLE_ITEM::ITEM_CATEGORY + " = " +
+        SQL_TABLE_ITEM::ITEM_CATEGORY             + " = " +
         SQL_TABLE_ITEM::Placeholder(SQL_TABLE_ITEM::ITEM_CATEGORY);
 
+const QString SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL =
+        "SELECT * FROM " + SQL_TABLE_ITEM::ITEM_TABLE_NAME + " WHERE " +
+        SQL_TABLE_ITEM::ITEM_CATEGORY                      + " = " +
+        SQL_TABLE_ITEM::Placeholder(SQL_TABLE_ITEM::ITEM_CATEGORY) +
+        " ORDER BY " + SQL_TABLE_ITEM::ITEM_ID             + " ASC" +
+        " LIMIT %1 OFFSET %2";
 
 
-
-
+/*--------------------------------------------------------------------------*/
 
 
 void OwnConfig::initConfig()
@@ -99,10 +105,6 @@ void OwnConfig::initConfig()
     {
         qDebug() << "[ERROR] CREATE MYDOCUMENT FILE FAILED.";
     }
-    // 计算每一元素的大小
-    auto pScreen = QGuiApplication::primaryScreen();
-    mElement.setWidth(pScreen->size().width()*1/3*1/4);
-    mElement.setHeight(mElement.width()*2);
 
     // 设置标题font
     QFont font("Microsoft YaHei", 10, QFont::Bold);
@@ -111,18 +113,27 @@ void OwnConfig::initConfig()
 
     // 初始化页面配置
     auto categoryCnt = static_cast<int>(SQL_ITEM_CATEGORY::COUNT);
-    mPageCount = QVector<int>(categoryCnt - 1, 0);
+    mPageCount = QVector<int>(categoryCnt, 0);
     for(int i = 1; i < categoryCnt; ++ i)
     {
-        updatePages(static_cast<SQL_ITEM_CATEGORY>(i));
+        updateCategoryCount(static_cast<SQL_ITEM_CATEGORY>(i));
     }
 }
 
-void OwnConfig::updatePages(SQL_ITEM_CATEGORY category)
+void OwnConfig::updateCategoryCount(SQL_ITEM_CATEGORY category)
 {
     auto index = static_cast<int>(category) - 1;
     auto cnt = OwnDatabase::getInstance()->categoryCount(category);
     mPageCount[index] = cnt;
+}
+
+OwnItemUploadView *OwnConfig::getItemViewer()
+{
+    if(!mpItemViewer)
+    {
+        mpItemViewer = new OwnItemUploadView();
+    }
+    return mpItemViewer;
 }
 
 }

@@ -22,6 +22,9 @@ public:
 
     void cropFinished();
     void setPixmap(QPixmap pix);
+    const QPixmap& getFinalPixmap() const;
+    void reset();
+    void reset(const QString& path);
 
 protected:
     void paintEvent(QPaintEvent* event) override ;

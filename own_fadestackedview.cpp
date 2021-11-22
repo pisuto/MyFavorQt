@@ -49,8 +49,6 @@ void OwnFadeStackedView::valueChangedAnimation(QVariant value)
 void OwnFadeStackedView::animationFininshed()
 {
     mbIsAnimation = false;
-//    this->widget(this->currentIndex())->show();
-//    this->setCurrentIndex(mNextIdx);
 }
 
 void OwnFadeStackedView::paintEvent(QPaintEvent* )
@@ -59,36 +57,8 @@ void OwnFadeStackedView::paintEvent(QPaintEvent* )
         return;
 }
 
-//void OwnFadeStackedView::paintNext(QPainter& painter, int index)
-//{
-//    QWidget *nextWidget = this->widget(index);
-//    QRect rect = this->geometry();
-//    nextWidget->resize(rect.width(), rect.height());
-
-//    QPixmap nextPixmap(nextWidget->size());
-//    nextWidget->render(&nextPixmap);
-
-//    QColor currColor = mStartColor;
-//    mStartColor.setAlphaF((1 - mCurrentVal.toDouble()));
-
-//    QRectF r1(0, 0, rect.width(), rect.height());
-//    QRectF r2(0, 0, rect.width(), rect.height());
-//    painter.setOpacity(1 - mCurrentVal.toDouble());
-//    painter.drawPixmap(r1, nextPixmap, r2);
-//}
-
 void OwnFadeStackedView::startAnimation(int index)
 {
-//    mbIsAnimation = true;
-//    mCurrIdx = mNextIdx;
-//    mNextIdx = index;
-//    this->currentWidget()->setGraphicsEffect(mpEffect);
-//    mpAnimeAlpha->setDuration(mDuration);
-//    mpAnimeAlpha->setStartValue(1);
-//    mpAnimeAlpha->setEndValue(0);
-//    mpAnimeAlpha->setEasingCurve(QEasingCurve::Linear);
-//    mpAnimeAlpha->start();
-
     // https://doc.qt.io/qt-5/qeasingcurve.html
     mbIsAnimation = true;
     mCurrIdx = mNextIdx;

@@ -5,6 +5,7 @@
 
 #include "own_screencapture.h"
 #include "own_imageviewer.h"
+#include "own_lineedit.h"
 
 class QVBoxLayout;
 class QLineEdit;
@@ -19,6 +20,9 @@ class OwnItemUploadForm : public QFrame
     Q_OBJECT
 public:
     explicit OwnItemUploadForm(QWidget* parent = Q_NULLPTR);
+    QWidget* getFormInfoByTag(const QString& tag);
+
+    void clearData();
 
 private:
     void chooseImageDialog();
@@ -31,11 +35,11 @@ private:
     QLabel* mpCategory;
     QLabel* mpYear;
 
-    QLineEdit* mpTitleEdit;
-    QLineEdit* mpAuthorEdit;
-    QLineEdit* mpDescEdit;
+    OwnLineEdit* mpTitleEdit;
+    OwnLineEdit* mpAuthorEdit;
+    OwnLineEdit* mpDescEdit;
     QComboBox* mpCategoryEdit;
-    QLineEdit* mpYearEdit;
+    OwnLineEdit* mpYearEdit;
 
     QLabel* mpCrop;
     QPushButton* mpStartCapBtn;

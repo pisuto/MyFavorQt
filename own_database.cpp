@@ -1,5 +1,6 @@
 #include "own_database.h"
 #include "own_database_item.h"
+#include "own_util.h"
 
 #include <QDebug>
 
@@ -32,7 +33,7 @@ OwnDatabase::OwnDatabase()
     }
 }
 
-void OwnDatabase::insert(odbitem &item)
+int OwnDatabase::insert(odbitem &item)
 {
     mQueExecutor.prepare(SQL_SYNTAX::INSERT_ITEM_SQL);
     bindValues(item.title, item.author, item.desc, item.label, item.path,
@@ -42,9 +43,10 @@ void OwnDatabase::insert(odbitem &item)
         qDebug() << "ERROR: " << SQL_SYNTAX::INSERT_ITEM_SQL << " "
                  << mQueExecutor.lastError();
     }
+    return mQueExecutor.lastInsertId().toInt(); // 返回自增的主键值
 }
 
-void OwnDatabase::select(odbitem &item)
+odbitem OwnDatabase::select(odbitem &item)
 {
     mQueExecutor.prepare(SQL_SYNTAX::SELECT_ITEM_SQL);
     bindValues(item.id);
@@ -57,18 +59,58 @@ void OwnDatabase::select(odbitem &item)
     {
         while(mQueExecutor.next())
         {
-            item.id     = mQueExecutor.value(0).toInt();
-            item.title  = mQueExecutor.value(1).toString();
-            item.author = mQueExecutor.value(2).toString();
-            item.desc   = mQueExecutor.value(3).toString();
-            item.label  = mQueExecutor.value(4).toInt();
-            item.path   = mQueExecutor.value(5).toString();
-            item.category = mQueExecutor.value(6).toInt();
-            item.create_year = mQueExecutor.value(7).toInt();
-            item.init_time = mQueExecutor.value(8).toString();
-            qDebug() << item;
+            resetItemWithResult(item);
         }
     }
+    return item;
+}
+
+QList<odbitem> OwnDatabase::selectOnePage(int pos, SQL_ITEM_CATEGORY category)
+{
+    odbitem item;
+    QList<odbitem> list;
+
+    item.category = static_cast<int>(category);
+    mQueExecutor.prepare(SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT)).arg(pos));
+    bindValues(item.category);
+    if(!mQueExecutor.exec())
+    {
+        qDebug() << "ERROR: " << SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(pos).arg(static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT) - 1) << " "
+                 << mQueExecutor.lastError();
+    }
+    else
+    {
+        while (mQueExecutor.next()) {
+            resetItemWithResult(item);
+            list.push_back(item);
+        }
+    }
+    return list;
+}
+
+void OwnDatabase::update(odbitem &item)
+{
+    mQueExecutor.prepare(SQL_SYNTAX::UPDATE_ITEM_SQL);
+    bindValues(item.title, item.author, item.desc, item.label, item.path,
+               item.category, item.create_year, item.id);
+    if(!mQueExecutor.exec())
+    {
+        qDebug() << "ERROR: " << SQL_SYNTAX::UPDATE_ITEM_SQL << " "
+                 << mQueExecutor.lastError();
+    }
+}
+
+bool OwnDatabase::remove(odbitem &item)
+{
+    mQueExecutor.prepare(SQL_SYNTAX::DELETE_ITEM_SQL);
+    bindValues(item.id);
+    if(!mQueExecutor.exec())
+    {
+        qDebug() << "ERROR: " << SQL_SYNTAX::SELECT_ITEM_SQL << " "
+                 << mQueExecutor.lastError();
+        return false;
+    }
+    return true;
 }
 
 int OwnDatabase::categoryCount(SQL_ITEM_CATEGORY category)
@@ -92,8 +134,61 @@ int OwnDatabase::categoryCount(SQL_ITEM_CATEGORY category)
     return cnt;
 }
 
+void OwnDatabase::resetItemWithResult(odbitem &item)
+{
+    item.id     = mQueExecutor.value(0).toInt();
+    item.title  = mQueExecutor.value(1).toString();
+    item.author = mQueExecutor.value(2).toString();
+    item.desc   = mQueExecutor.value(3).toString();
+    item.label  = mQueExecutor.value(4).toInt();
+    item.path   = mQueExecutor.value(5).toString();
+    item.category = mQueExecutor.value(6).toInt();
+    item.create_year = mQueExecutor.value(7).toInt();
+    item.init_time = mQueExecutor.value(8).toString();
+}
 
+void OwnDatabase::deleteAllStoredItem()
+{
+    for(auto& shared : mvWaitforRemove)
+    {
+        if(this->remove(*shared))
+        {
+            OwnUtil::deleteFile(SQL_TABLE_ITEM::ImgFileLocation() + "/" + shared->path.value());
+        }
+    }
+}
 
+void OwnDatabase::storeDeletingItem(odbitem &item)
+{
+    auto shared = QSharedPointer<odbitem>(new odbitem(item));
+    mvWaitforRemove.push_back(shared);
+}
 
+void OwnDatabase::removeDeletingItem(int id)
+{
+    const int size = mvWaitforRemove.size();
+    for (int i = 0; i < size; ++i) {
+        if(id == mvWaitforRemove[i]->id.value())
+        {
+            mvWaitforRemove.remove(i);
+            break;
+        }
+    }
+}
+
+QSharedPointer<odbitem> OwnDatabase::returnDeletingItem(int id) const
+{
+    QSharedPointer<odbitem> shared;
+    const int size = mvWaitforRemove.size();
+    for (int i = 0; i < size; ++i) {
+        shared = mvWaitforRemove[i];
+        if(id == shared->id.value())
+        {
+            return shared;
+        }
+    }
+    shared->id = -1;
+    return shared;
+}
 
 }

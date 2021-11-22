@@ -22,6 +22,7 @@ public:
     void initAnimationEffect();
     void switchWidget(int index);
     void setDuration(quint16 dura) { mDuration = dura; }
+    OwnPageBar* getPageBar() { return mpPageBar; }
 
 public slots:
     void valueChangedAnimation(QVariant value);

@@ -58,4 +58,3 @@ color: white;
 border-radius: 4px;
 background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(181, 181, 181, 255), stop:1 rgba(207, 207, 207, 255));
 }
-

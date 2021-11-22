@@ -35,10 +35,12 @@ SOURCES += \
         own_database.cpp \
         own_element.cpp \
         own_fadestackedview.cpp \
+        own_lineedit.cpp \
         own_mainwidget.cpp \
         own_pagebar.cpp \
         own_slidestackedview.cpp \
         item_upload_window/own_itemuploadview.cpp \
+        own_util.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -52,6 +54,7 @@ HEADERS += \
         own_database_item.h \
         own_element.h \
         own_fadestackedview.h \
+        own_lineedit.h \
         own_mainwidget.h \
         own_pagebar.h \
         own_slidestackedview.h \

@@ -154,7 +154,7 @@ void OwnPageBar::initialize()
     mpPageEdit->setObjectName("own_pagebar_edit");
     mpPageEdit->setPlaceholderText("number");
     mpPageEdit->setAlignment(Qt::AlignLeft);
-    mpPageEdit->setFixedWidth(config->getElementSize().width() / 3);
+    mpPageEdit->setFixedWidth(config->getDisplayImageSize().width() / 3);
     mpPageEdit->setValidator(new QIntValidator(1, 100, this));
 
     mpNxtPageLabel->setProperty("page", "true");

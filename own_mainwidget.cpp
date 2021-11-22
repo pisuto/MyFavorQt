@@ -1,5 +1,8 @@
 #include "own_mainwidget.h"
 #include "own_config.h"
+#include "own_database.h"
+#include "own_database_item.h"
+#include "own_util.h"
 
 #include <QPainter>
 #include <QtMath>
@@ -31,11 +34,15 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
     btn6->setIconSize(QSize(20,20));
     btn7->setIconSize(QSize(20,20));
     connect(btn2, &QPushButton::clicked,
-            this, &OwnMainWidget::on_btn2_clicked);
+            this, [&](){this->mpStackedView->switchWidget(0);});
     connect(btn3, &QPushButton::clicked,
-            this, &OwnMainWidget::on_btn3_clicked);
+            this, [&](){this->mpStackedView->switchWidget(1);});
     connect(btn4, &QPushButton::clicked,
-            this, &OwnMainWidget::on_btn4_clicked);
+            this, [&](){this->mpStackedView->switchWidget(2);});
+    connect(btn5, &QPushButton::clicked,
+            this, [&](){this->mpStackedView->switchWidget(3);});
+    connect(btn6, &QPushButton::clicked,
+            this, [&](){this->mpStackedView->switchWidget(4);});
     // 添加buttons到layout里
     mpBtnGrp->setObjectName("own_buttongroup");
     mpBtnGrp->layout()->addWidget(btn1);
@@ -49,25 +56,14 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
     mpBtnGrp->initButtonConnect();
 
     // 初始化页面的分页组件
-    mpPageBar = new mf::OwnPageBar(OwnConfig::getInstance()->getPages()[0]);
+    mpPageBar = new mf::OwnPageBar(OwnUtil::getPages(1));
     mpStackedView = new mf::OwnFadeStackedView(mpPageBar, this);
     // 显示元素
-    QString path = "F:/Projects/Project.program/Qt/MyFavor/MyFavorQt/images/OIP-C.jpg";
-    for(int i = 0; i < 3; i++)
+    int count = static_cast<int>(SQL_ITEM_CATEGORY::COUNT);
+    for(int i = 0; i < count; i++)
     {
-        auto container1 = createContainer(path, QString("title%1").arg(i*3),
-                                          QString("user%1").arg(i*3),
-                                          QString("desc%1").arg(i*3));
-        auto container2 = createContainer(path, QString("title%1").arg(i*3+1),
-                                          QString("user%1").arg(i*3+1),
-                                          QString("desc%1").arg(i*3+1));
-        auto container3 = createContainer(path, QString("title%1").arg(i*3+2),
-                                          QString("user%1").arg(i*3+2),
-                                          QString("desc%1").arg(i*3+2));
-        auto view = new mf::OwnSlideStackedView();
-        view->addWidget(container1);
-        view->addWidget(container2);
-        view->addWidget(container3);
+        auto view = new mf::OwnSlideStackedView(i + 1, mpStackedView);
+        OwnUtil::addPages(view, i + 1);
         mpStackedView->addWidget(view);
     }
 
@@ -79,37 +75,6 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
     pMainLayout->addWidget(mpStackedView);
     pMainLayout->addWidget(mpPageBar);
     this->setLayout(pMainLayout);
-}
-
-QFrame* OwnMainWidget::createContainer(QString path, QString title, QString author, QString desc)
-{
-    auto pTmpLayout = new QGridLayout();
-    for(int i = 0; i < static_cast<int>(mf::SQL_PAGE_ITEM_GRID::ROW); ++i)
-    {
-        for(int j = 0; j < static_cast<int>(mf::SQL_PAGE_ITEM_GRID::COL); ++j)
-        {
-            pTmpLayout->addWidget(new mf::OwnElement(path, title, author, desc), i, j, 1, 1);
-        }
-    }
-    pTmpLayout->setMargin(5);
-    auto container = new QFrame();
-    container->setLayout(pTmpLayout);
-    return container;
-}
-
-void OwnMainWidget::on_btn2_clicked()
-{
-    mpStackedView->switchWidget(0);
-}
-
-void OwnMainWidget::on_btn3_clicked()
-{
-    mpStackedView->switchWidget(1);
-}
-
-void OwnMainWidget::on_btn4_clicked()
-{
-    mpStackedView->switchWidget(2);
 }
 
 }

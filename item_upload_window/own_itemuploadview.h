@@ -22,9 +22,15 @@ public:
     explicit OwnItemUploadView(QWidget *parent = nullptr);
     ~OwnItemUploadView() override ;
 
-private slots:
-    void onBtnScrClicked();
-    void onBtnDocClicked();
+    void clear();
+    void openThisItem(int id);
+    void delItem(int id);
+
+    void setId(int id) { mIdentification = id; }
+    int getId() const { return mIdentification; }
+
+signals:
+    void sendItemChangedMsg(int, int);
 
 protected:
     void paintEvent(QPaintEvent* e) override;
@@ -32,12 +38,16 @@ protected:
     void mousePressEvent(QMouseEvent*event) override;
 
 private:
+    void updateItem(SQL_ITEM_OPER oper);
+    void clearItemData();
+private:
     Ui::OwnItemUploadView *ui;
 
     OwnButtonGroup* mpBtnGrp;
     OwnFadeStackedView* mpStackedView;
     QVBoxLayout* mpMainLayout;
     QPoint mDragPos;
+    int mIdentification;
 };
 
 }

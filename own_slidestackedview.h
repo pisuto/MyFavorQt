@@ -18,7 +18,7 @@ class OwnSlideStackedView : public QStackedWidget
 {
     Q_OBJECT
 public:
-    explicit OwnSlideStackedView(QWidget* parent = nullptr);
+    explicit OwnSlideStackedView(int category, QWidget* parent = nullptr);
     virtual ~OwnSlideStackedView() {}
 
     void nextWidget(int nxtIdx);
@@ -28,8 +28,8 @@ public slots:
     void valueChangedAnimation(QVariant value);
     void animationFininshed();
 
-    void deleteOperAction();
-    void addOperAction();
+    // 在新元素插入、删除、更新时进行画面的更新
+    void updateElements(int id, int oper);
 
 protected:
     void paintEvent(QPaintEvent* event);
@@ -39,7 +39,6 @@ private:
     void paintNext(QPainter& painter, int index);
 
     void startAnimation(int index);
-    void initRightMenu();
 
 private:
     QPropertyAnimation* mpAnime;
@@ -49,8 +48,8 @@ private:
     quint8 mNextIdx;
     bool mbIsLeft;
     bool mbIsAnimation;
-
-    OwnItemUploadView* mpUploadView;
+    int mCategory;
+    QWidget* mpParent;
 };
 
 }

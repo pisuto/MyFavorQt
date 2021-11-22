@@ -1,4 +1,8 @@
 #include "own_slidestackedview.h"
+#include "own_element.h"
+#include "own_database.h"
+#include "own_database_item.h"
+#include "own_util.h"
 
 #include <QPropertyAnimation>
 #include <QPainter>
@@ -7,14 +11,18 @@
 
 namespace mf {
 
-OwnSlideStackedView::OwnSlideStackedView(QWidget* parent) : QStackedWidget (parent),
+OwnSlideStackedView::OwnSlideStackedView(int category, QWidget* parent) : QStackedWidget (parent),
   mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mbIsLeft(true),
-  mbIsAnimation(false),
-  mpUploadView(new OwnItemUploadView(this))
+  mbIsAnimation(false), mCategory(category), mpParent(parent)
 {
-    initRightMenu();
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);
     connect(mpAnime, &QPropertyAnimation::finished, this, &OwnSlideStackedView::animationFininshed);
+
+    auto pItemViewer = OwnConfig::getInstance()->getItemViewer();
+    connect(pItemViewer,
+            static_cast<void(OwnItemUploadView::*)(int, int)>(&OwnItemUploadView::sendItemChangedMsg),
+            this,
+            static_cast<void(OwnSlideStackedView::*)(int, int)>(&OwnSlideStackedView::updateElements));
 }
 
 void OwnSlideStackedView::valueChangedAnimation(QVariant value)
@@ -104,36 +112,13 @@ void OwnSlideStackedView::paintNext(QPainter &painter, int index)
     }
 }
 
-void OwnSlideStackedView::initRightMenu()
+void OwnSlideStackedView::updateElements(int id, int oper)
 {
-    {
-        auto action = new QAction(this);
-        action->setText("add");
-        connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
-                this, &OwnSlideStackedView::addOperAction);
-        this->addAction(action);
-    }
-    {
-        auto action = new QAction(this);
-        action->setText("delete");
-        connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
-                this, &OwnSlideStackedView::deleteOperAction);
-        this->addAction(action);
-    }
-
-    this->setContextMenuPolicy(Qt::ActionsContextMenu);
+    // 更新页码的变化
+    auto pages = OwnUtil::getPages(this->mCategory);
+    qobject_cast<OwnFadeStackedView*>(this->mpParent)->getPageBar()->setMaxPage(pages);
+    // 处理页面的变化
+    OwnUtil::updatePages(this, this->mCategory, id, static_cast<SQL_ITEM_OPER>(oper));
 }
-
-void OwnSlideStackedView::deleteOperAction()
-{
-
-}
-
-void OwnSlideStackedView::addOperAction()
-{
-    mpUploadView->open(); // 仅阻塞父窗口
-}
-
-
 
 }

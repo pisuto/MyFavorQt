@@ -14,16 +14,18 @@ class oobject
 public:
     using value_type = T;
     using reference_type = T&;
+    using const_reference_type = const T&;
 
 public:
     explicit oobject(value_type val, QString name) : content(val), typeName(name) {}
     explicit oobject(QString name) : typeName(name) {}
+    explicit oobject(const oobject& rhs) : oobject(rhs.content, rhs.typeName) {}
 
     void value(value_type val) { content = val; }
     value_type value() const { return content; }
     QString type_name() const { return typeName; }
 
-    oobject& operator= (const T& rhs) { value(rhs); return *this; }
+    oobject& operator= (const_reference_type rhs) { value(rhs); return *this; }
 
 private:
     value_type content;
@@ -44,6 +46,19 @@ public:
         create_year(SQL_TABLE_ITEM::ITEM_CRATEYEAR),
         init_time(SQL_TABLE_ITEM::ITEM_INITTIME)
     {}
+
+    odbitem(const odbitem& rhs) :
+        id(rhs.id),
+        title(rhs.title),
+        author(rhs.author),
+        desc(rhs.desc),
+        label(rhs.label),
+        path(rhs.path),
+        category(rhs.category),
+        create_year(rhs.create_year),
+        init_time(rhs.init_time)
+    {}
+
 
     oobject<int>     id;
     oobject<QString> title;

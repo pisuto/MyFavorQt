@@ -9,10 +9,18 @@
 #include <QLabel>
 #include <QStandardPaths>
 #include <QDir>
-
 #include <QDebug>
 
 namespace mf {
+
+// 对元素的操作类型
+enum class SQL_ITEM_OPER
+{
+    NONE,
+    INSERT,
+    UPDATE,
+    DELETE,
+};
 
 // 展示的图片大小
 enum class IMAGE_DISPLAY_SIZE
@@ -30,7 +38,7 @@ enum class SQL_ITEM_CATEGORY
     MOVIE = 3,
     MUSIC = 4,
     PHOTO = 5,
-    COUNT,
+    COUNT = 5,
 };
 
 enum class SQL_PAGE_ITEM_GRID
@@ -85,6 +93,8 @@ struct SQL_SYNTAX
     static const QString UPDATE_ITEM_SQL;
     static const QString DELETE_ITEM_SQL;
     static const QString QUERY_ITEM_CNT_BY_CATEGORY;
+    /* 需要输入开始获取的位置参数 */
+    static const QString SELECT_ITEM_POS_OFFSET_SQL;
 };
 
 // 单例模式基类
@@ -121,16 +131,16 @@ QSharedPointer<T> OwnSingleton<T>::mspInstance;
 template<typename T>
 QMutex OwnSingleton<T>::mMutex;
 
+class OwnItemUploadView;
+
 // 单例配置类
 class OwnConfig : public OwnSingleton<OwnConfig>
 {
 public:
-    OwnConfig() {}
+    OwnConfig() : mpMainWindow(Q_NULLPTR), mpItemViewer(Q_NULLPTR) {}
     ~OwnConfig() {}
 
     void initConfig();
-
-    const QSize getElementSize() const { return mElement; }
 
     void setTitleStyle(QLabel* pTitle)
     {
@@ -147,15 +157,20 @@ public:
         pLabel->setFont(font);
     }
 
-    const QVector<int>& getPages() const { return mPageCount; }
-    void updatePages(SQL_ITEM_CATEGORY category);
+    const QVector<int>& getCategoryCount() const { return mPageCount; }
+    void updateCategoryCount(SQL_ITEM_CATEGORY category);
+
     QSize getDisplayImageSize() const { return QSize(static_cast<int>(IMAGE_DISPLAY_SIZE::WIDTH), static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT)); }
+
     QWidget* getMainWindowPtr() const { return mpMainWindow; }
     void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
+
+    OwnItemUploadView *getItemViewer();
+
 private:
-    QSize mElement;
     QVector<int> mPageCount;
     QWidget* mpMainWindow;
+    OwnItemUploadView* mpItemViewer;
 };
 
 }

@@ -29,13 +29,7 @@ public:
     explicit OwnMainWidget(QWidget *parent = nullptr);
     ~OwnMainWidget() override {}
 
-    QFrame* createContainer(QString path, QString title, QString author, QString desc);
     QSize getTopRightDownPos() const { return QSize(mpTopBtns->geometry().x() + mpTopBtns->width(), mpTopBtns->geometry().y() + mpTopBtns->height()); }
-
-public slots:
-    void on_btn2_clicked();
-    void on_btn3_clicked();
-    void on_btn4_clicked();
 
 private:
     QVBoxLayout* pMainLayout;

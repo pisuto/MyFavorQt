@@ -12,5 +12,6 @@
         <file>images/windows/min-pressed.png</file>
         <file>images/windows/min.png</file>
         <file>images/svgtopng/default.png</file>
+        <file>images/svgtopng/deleted.png</file>
     </qresource>
 </RCC>

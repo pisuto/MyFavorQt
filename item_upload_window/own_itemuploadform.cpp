@@ -20,11 +20,11 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     mpDesc(new QLabel),
     mpCategory(new QLabel),
     mpYear(new QLabel),
-    mpTitleEdit(new QLineEdit),
-    mpAuthorEdit(new QLineEdit),
-    mpDescEdit(new QLineEdit),
+    mpTitleEdit(new OwnLineEdit),
+    mpAuthorEdit(new OwnLineEdit),
+    mpDescEdit(new OwnLineEdit),
     mpCategoryEdit(new QComboBox),
-    mpYearEdit(new QLineEdit),
+    mpYearEdit(new OwnLineEdit),
     mpCrop(new QLabel),
     mpStartCapBtn(new QPushButton),
     mpUploadImgBtn(new QPushButton),
@@ -105,6 +105,66 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     connect(mpApplyBtn, &QPushButton::clicked, this, [&](){
         this->mpViewer->cropFinished();
     });
+}
+
+QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag)
+{
+    if(tag == SQL_TABLE_ITEM::ITEM_TITLE)
+    {
+        if(mpTitleEdit->text().isEmpty())
+        {
+            mpTitleEdit->setNullStyle();
+            return Q_NULLPTR;
+        }
+        return mpTitleEdit;
+    }
+    else if(tag == SQL_TABLE_ITEM::ITEM_AUTHOR)
+    {
+        if(mpAuthorEdit->text().isEmpty())
+        {
+            mpAuthorEdit->setNullStyle();
+            return Q_NULLPTR;
+        }
+        return mpAuthorEdit;
+    }
+    else if(tag == SQL_TABLE_ITEM::ITEM_DESC)
+    {
+        if(mpDescEdit->text().isEmpty())
+        {
+            mpDescEdit->setNullStyle();
+            return Q_NULLPTR;
+        }
+        return mpDescEdit;
+    }
+    else if(tag == SQL_TABLE_ITEM::ITEM_IMAGEPATH)
+    {
+        return this->mpViewer;
+    }
+    else if(tag == SQL_TABLE_ITEM::ITEM_CATEGORY)
+    {
+        return mpCategoryEdit;
+    }
+    else if(tag == SQL_TABLE_ITEM::ITEM_CRATEYEAR)
+    {
+        if(mpYearEdit->text().isEmpty())
+        {
+            mpYearEdit->setNullStyle();
+            return Q_NULLPTR;
+        }
+        return mpYearEdit;
+    }
+
+    return Q_NULLPTR;
+}
+
+void OwnItemUploadForm::clearData()
+{
+    mpTitleEdit->clear();
+    mpAuthorEdit->clear();
+    mpDescEdit->clear();
+    mpCategoryEdit->setCurrentIndex(0);
+    mpYearEdit->clear();
+    mpViewer->reset();
 }
 
 void OwnItemUploadForm::chooseImageDialog()

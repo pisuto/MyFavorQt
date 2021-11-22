@@ -115,4 +115,25 @@ void OwnImageViewer::setPixmap(QPixmap pix)
     }
 }
 
+const QPixmap& OwnImageViewer::getFinalPixmap() const
+{
+    return *mpDisplay->pixmap();
+}
+
+void OwnImageViewer::reset()
+{
+    mpPixmap->load(":/images/svgtopng/default.png");
+    mpDisplay->clear();
+}
+
+void OwnImageViewer::reset(const QString& path)
+{
+    QPixmap tmp;
+    if(tmp.load(path))
+    {
+        return;
+    }
+    mpDisplay->setPixmap(tmp);
+}
+
 }

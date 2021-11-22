@@ -17,13 +17,22 @@ class OwnDatabase : public OwnSingleton<OwnDatabase>
 {
 public:
     OwnDatabase();
-    ~OwnDatabase() { mDBAllocator.close(); }
+    ~OwnDatabase() { deleteAllStoredItem(); mDBAllocator.close(); }
 
-    void insert(odbitem& item);
-    void select(odbitem& item);
+    int insert(odbitem& item);
+    odbitem select(odbitem& item);
+    void update(odbitem& item);
+    bool remove(odbitem& item);
     int categoryCount(SQL_ITEM_CATEGORY category);
 
+    /* 输入的pos为一页的起始 */
+    QList<odbitem> selectOnePage(int pos, SQL_ITEM_CATEGORY category);
+    /* 保存即将删除的元素，在退出时全部删除 */
+    void storeDeletingItem(odbitem& item);
+    void removeDeletingItem(int id);
+    QSharedPointer<odbitem> returnDeletingItem(int id) const;
 
+private:
     template<typename T, typename ...Args>
     void bindValues(T& type, Args&... args)
     {
@@ -35,9 +44,13 @@ public:
     template<int = 0>
     void bindValues() {}
 
-public:
+    void resetItemWithResult(odbitem& item);
+    void deleteAllStoredItem();
+
+private:
     QSqlDatabase mDBAllocator;
     QSqlQuery mQueExecutor;
+    QVector<QSharedPointer<odbitem>> mvWaitforRemove;
 };
 
 }
