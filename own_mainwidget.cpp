@@ -7,14 +7,39 @@
 #include <QPainter>
 #include <QtMath>
 #include <QMenu>
+#include <QSystemTrayIcon>
 
 namespace mf {
 
 OwnMainWidget::OwnMainWidget(QWidget *parent) :
     QFrame(parent),
+    mpTrayFunc(new QSystemTrayIcon(this)),
     mpBtnGrp(new mf::OwnButtonGroup(40, this)),
     mpTopBtns(new mf::OwnTopButtonGroup(parent))
 {
+    // 初始化托盘
+    mpTrayFunc->setIcon(QIcon(":images/icon/tray.png"));
+    mpTrayFunc->setToolTip(tr("MyFavor"));
+    connect(mpTrayFunc, static_cast<void(QSystemTrayIcon::*)(QSystemTrayIcon::ActivationReason)>(&QSystemTrayIcon::activated),
+            this, [](QSystemTrayIcon::ActivationReason reason)
+                  { if(reason == QSystemTrayIcon::DoubleClick) OwnConfig::getInstance()->showWindowFromTray(); });
+    auto pTrayMenu = new QMenu(this);
+    {
+        auto pAction = new QAction(tr("Show"), this);
+        connect(pAction, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
+                this, [](){ OwnConfig::getInstance()->showWindowFromTray(); });
+        pTrayMenu->addAction(pAction);
+    }
+    {
+        auto pAction = new QAction(tr("Exit"), this);
+        connect(pAction, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
+                this, [](){ QApplication::quit(); });
+        pTrayMenu->addAction(pAction);
+    }
+    mpTrayFunc->setContextMenu(pTrayMenu);
+    connect(mpTopBtns, static_cast<void(OwnTopButtonGroup::*)(bool)>(&OwnTopButtonGroup::closeWindowToTray), this,
+            [=](bool){ this->mpTrayFunc->show(); mpTrayFunc->showMessage(windowTitle(), "Here!"); });
+
     // 创建layout
     pMainLayout = new QVBoxLayout();
     // 创建buttons

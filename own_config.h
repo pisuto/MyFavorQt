@@ -165,12 +165,18 @@ public:
     QWidget* getMainWindowPtr() const { return mpMainWindow; }
     void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
 
+    void setTrayed(bool result) { mbTrayed = result; }
+    bool getTrayed() const { return mbTrayed; }
+    void hideWindowToTray();
+    void showWindowFromTray();
+
     OwnItemUploadView *getItemViewer();
 
 private:
     QVector<int> mPageCount;
     QWidget* mpMainWindow;
-    OwnItemUploadView* mpItemViewer;
+    mf::OwnItemUploadView* mpItemViewer;
+    bool mbTrayed;
 };
 
 }

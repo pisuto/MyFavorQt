@@ -18,6 +18,7 @@
 
 class QFrame;
 class QWidget;
+class QSystemTrayIcon;
 
 namespace mf {
 
@@ -35,16 +36,15 @@ private:
     QVBoxLayout* pMainLayout;
     QHBoxLayout* pTopLayout;
     QGridLayout* pListLayout;
-
     QListWidget* pImgList;
     QVector<QObject*> vpButtons;
     QVector<QListWidgetItem*> vpImgs;
-
     QVector<mf::OwnElement*> mvpElements;
+    QSystemTrayIcon* mpTrayFunc;
+
     mf::OwnFadeStackedView* mpStackedView;
     mf::OwnButtonGroup* mpBtnGrp;
     mf::OwnPageBar* mpPageBar;
-
     mf::OwnTopButtonGroup* mpTopBtns;
 };
 

@@ -2,6 +2,8 @@
 #include "own_database.h"
 #include "item_upload_window/own_itemuploadview.h"
 
+#include "MainWindow.h"
+
 namespace mf {
 
 const QString SQL_TABLE_ITEM::ITEM_DATABASE_NAME = "myfavor.db";
@@ -118,6 +120,8 @@ void OwnConfig::initConfig()
     {
         updateCategoryCount(static_cast<SQL_ITEM_CATEGORY>(i));
     }
+
+    setTrayed(false);
 }
 
 void OwnConfig::updateCategoryCount(SQL_ITEM_CATEGORY category)
@@ -125,6 +129,18 @@ void OwnConfig::updateCategoryCount(SQL_ITEM_CATEGORY category)
     auto index = static_cast<int>(category) - 1;
     auto cnt = OwnDatabase::getInstance()->categoryCount(category);
     mPageCount[index] = cnt;
+}
+
+void OwnConfig::hideWindowToTray()
+{
+    auto pWindow = qobject_cast<MainWindow*>(getMainWindowPtr());
+    pWindow->hide();
+}
+
+void OwnConfig::showWindowFromTray()
+{
+    auto pWindow = qobject_cast<MainWindow*>(getMainWindowPtr());
+    pWindow->showNormal();
 }
 
 OwnItemUploadView *OwnConfig::getItemViewer()

@@ -46,24 +46,31 @@ void OwnElement::initRightMenu()
 {
     auto pDialog = OwnConfig::getInstance()->getItemViewer();
     {
-        auto action = new QAction(this);
-        action->setText("add");
+        auto action = new QAction("add", this);
         connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
                 this, [=](){ pDialog->clear(); pDialog->open(); });
         this->addAction(action);
     }
     {
-        auto action = new QAction(this);
-        action->setText("update");
+        auto action = new QAction("update", this);
         connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
                 this, [=](){ pDialog->openThisItem(this->getId()); pDialog->open(); });
         this->addAction(action);
     }
     {
-        auto action = new QAction(this);
-        action->setText("delete");
+        auto action = new QAction("delete", this);
         connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
                 this, [=](){ pDialog->delItem(this->getId()); /* 借用该窗口发送删除消息 */ });
+        this->addAction(action);
+    }
+    {
+        auto action = new QAction(this);
+        action->setText("restore");
+        connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
+                this,
+                [=](){ this->updateImage(*this->mpImg);
+                       this->setDeletingStatus(false);
+                       OwnDatabase::getInstance()->removeDeletingItem(this->getId());});
         this->addAction(action);
     }
 

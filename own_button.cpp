@@ -100,4 +100,32 @@ void OwnButtonGroup::initButtonConnect()
     }
 }
 
+void OwnTopButtonGroup::checkTrayed()
+{
+    auto pConfig = OwnConfig::getInstance();
+    if(pConfig->getTrayed())
+    {
+        pConfig->hideWindowToTray();
+    }
+    else
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(mpParent, "Trayed", "Need to minmize to tray or just quit?", QMessageBox::Yes | QMessageBox::No);
+        if(reply == QMessageBox::Yes)
+        {
+            pConfig->setTrayed(true);
+            pConfig->hideWindowToTray();
+
+        }
+        else
+        {
+            pConfig->setTrayed(false);
+            QApplication::quit();
+            return; // 不是立即退出
+        }
+    }
+
+    emit closeWindowToTray(true);
+}
+
 }

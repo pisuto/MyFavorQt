@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QDesktopWidget>
+#include <QMessageBox>
 
 class QPropertyAnimation;
 
@@ -113,17 +114,21 @@ public:
         mpLayout->setContentsMargins(0,0,0,0);
         this->setLayout(mpLayout);
 
-        connect(mpCloseBtn, &QPushButton::pressed, this, [](){ QApplication::quit(); });
+        connect(mpCloseBtn, &QPushButton::pressed, this, [=](){ this->checkTrayed(); });
         connect(mpMinBtn,   &QPushButton::pressed, this, [&](){ mpParent->showMinimized(); });
     }
 
     ~OwnTopButtonGroup() {}
 
+signals:
+    void closeWindowToTray(bool);
+
 private:
+    void checkTrayed();
+
     QWidget* mpParent;
     QPushButton* mpCloseBtn;
     QPushButton* mpMinBtn;
-
     QHBoxLayout* mpLayout;
 };
 

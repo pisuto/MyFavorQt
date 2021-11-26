@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mpMainWidget(new mf::OwnMainWidget(this))
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":images/icon/ice.png"));
     //设置无边框透明
     this->setWindowFlags(Qt::FramelessWindowHint);//无边框
     this->setAttribute(Qt::WA_TranslucentBackground);//背景透明
