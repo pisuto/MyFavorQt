@@ -4,7 +4,6 @@
 #include "own_database_item.h"
 #include "own_util.h"
 
-#include <QPainter>
 #include <QtMath>
 #include <QMenu>
 #include <QSystemTrayIcon>

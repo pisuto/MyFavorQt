@@ -7,8 +7,6 @@
 #include "own_pagebar.h"
 
 class QPropertyAnimation;
-class QParallelAnimationGroup;
-class QGraphicsOpacityEffect;
 
 namespace mf {
 
@@ -24,26 +22,12 @@ public:
     void setDuration(quint16 dura) { mDuration = dura; }
     OwnPageBar* getPageBar() { return mpPageBar; }
 
-public slots:
-    void valueChangedAnimation(QVariant value);
-    void animationFininshed();
-
-protected:
-    void paintEvent(QPaintEvent* event);
-
 private:
-//    void paintPrevious(QPainter& painter, int index);
-//    void paintNext(QPainter& painter, int index);
-
     void startAnimation(int index);
     void switchPage(int page);
 
 private:
-    QGraphicsOpacityEffect* mpEffect;
-    QPropertyAnimation* mpAnimeAlpha;
     QPropertyAnimation* mpAnimePos;
-    QParallelAnimationGroup* mpAnimeGrp;
-    QVariant mCurrentVal;
     quint16 mDuration;
     quint8 mWidgetCnt;
     quint8 mNextIdx;

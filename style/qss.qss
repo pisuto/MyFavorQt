@@ -1,6 +1,6 @@
 QFrame#own_element
 {
-background:grey;
+background:rgba(220,220,220,100);
 }
 
 QFrame
@@ -31,6 +31,11 @@ background:rgba(220,220,220,0);
 QLabel#own_element_desc
 {
 background:rgba(220,220,220,0);
+}
+
+QLabel#own_element_img
+{
+border: 2px solid gray;
 }
 
 QLineEdit#own_pagebar_edit

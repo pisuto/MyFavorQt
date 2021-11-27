@@ -80,6 +80,7 @@ QFrame *OwnUtil::createNewPage(int start, int category, QString defaultPath, QSt
             }
             else {
                 elem = new OwnElement(defaultPath, defaultTitle, defaultAuthor, defaultDesc);
+                elem->setElemOpacity(0);
             }
             elem->setCategory(category);
             pTmpLayout->addWidget(elem, i, j, 1, 1);
@@ -168,6 +169,36 @@ void OwnUtil::updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITE
         pDataBase->storeDeletingItem(item);
         elem->deleting();
     }
+    elem->setElemOpacity(1);
+}
+
+QString OwnUtil::strAutoFeed(const QString &text, const QFont& font, int row, int px)
+{
+    QString str = text;
+    QFontMetrics fm(font);
+    int autoIdx = 1;
+
+    if(!str.isEmpty())
+    {
+        // 得到可以整除的字符串宽度
+        int realPx = (px / fm.width(str.left(1))) * fm.width(str.left(1));
+        for(int i = 0; i < str.size(); ++i)
+        {
+            auto width = fm.width(str.left(i));
+            if(width >= realPx * autoIdx)
+            {
+                autoIdx++;
+                str.insert(i, "\n");
+            }
+            if(width >= realPx * row)
+            {
+                str.remove(i - 3, str.length() - i + 3);
+                str.insert(i - 3, "...\n");
+                break;
+            }
+        }
+    }
+    return str;
 }
 
 }

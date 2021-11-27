@@ -7,6 +7,7 @@ class QLabel;
 class QImage;
 class QPushButton;
 class QGridLayout;
+class QGraphicsOpacityEffect;
 
 namespace mf {
     class odbitem;
@@ -33,6 +34,8 @@ public:
     bool getDeletingStatus() const;
     void setDeletingStatus(bool value);
 
+    void setElemOpacity(float value);
+
 private:
     void initRightMenu();
     void updateImage(QString filename);
@@ -45,6 +48,7 @@ private:
     QLabel* mpDesc;
     QVector<QPushButton*> mvpLabels;
     QGridLayout* mpLayout;
+    QGraphicsOpacityEffect* mpOpacity;
 
     QString mTitle;
     QString mUser;

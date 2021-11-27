@@ -10,31 +10,41 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QAction>
+#include <QGraphicsOpacityEffect>
 
 namespace mf {
 
 OwnElement::OwnElement(QString fileName, QString title, QString user, QString desc)
     : mpImg(new QImage), mpLable(new QLabel), mpTitle(new QLabel),
-      mpUser(new QLabel), mpDesc(new QLabel), mpLayout(new QGridLayout),
+      mpUser(new QLabel), mpDesc(new QLabel), mpLayout(new QGridLayout), mpOpacity(new QGraphicsOpacityEffect(this)),
       mTitle(title), mUser(user), mDesc(desc), mIdentification(-1), mbDeleting(false)
 {
     initRightMenu(); // 初始化右键选择
+    this->setGraphicsEffect(mpOpacity); // 透明化
+    auto pConfig = OwnConfig::getInstance();
+    auto imgSize = pConfig->getDisplayImageSize();
+    int strWidth = static_cast<int>(imgSize.width() * 0.7);
+    this->setFixedWidth(imgSize.width() * 1.8);
+    this->setFixedHeight(imgSize.height() * 1.1);
 
     mpLable->setObjectName("own_element_img");
+    mpLable->setFixedSize(imgSize);
     this->updateImage(fileName);
     mpLable->setScaledContents(true);
-    mpLayout->addWidget(mpLable, 0, 0, 1, 1);
+    mpLayout->addWidget(mpLable, 0, 0, 5, 3);
 
     mpTitle->setObjectName("own_element_title");
     mpUser->setObjectName("own_element_user");
     mpDesc->setObjectName("own_element_desc");
-    mpTitle->setText(mTitle);
-    mpUser->setText(mUser);
-    mpDesc->setText(mDesc);
-    OwnConfig::getInstance()->setTitleStyle(mpTitle);
-    mpLayout->addWidget(mpTitle, 1, 0, 1, 1);
-    mpLayout->addWidget(mpUser, 2, 0, 1, 1);
-    mpLayout->addWidget(mpDesc, 3, 0, 1, 1);
+    pConfig->setFont(mpTitle, 15, QFont::Bold);
+    pConfig->setFont(mpUser, 10);
+    pConfig->setFont(mpDesc, 10);
+    mpTitle->setText(OwnUtil::strAutoFeed(mTitle, mpTitle->font(), 3, strWidth));
+    mpUser->setText(OwnUtil::strAutoFeed(mUser, mpUser->font(), 2, strWidth));
+    mpDesc->setText(OwnUtil::strAutoFeed(mDesc, mpDesc->font(), 6, strWidth));
+    mpLayout->addWidget(mpTitle, 0, 4, 1, 4);
+    mpLayout->addWidget(mpUser, 1, 4, 1, 4);
+    mpLayout->addWidget(mpDesc, 2, 4, 1, 4);
 
     this->setObjectName("own_element"); // 设置某一控件的名字
     this->setFrameShape(StyledPanel);
@@ -103,6 +113,11 @@ bool OwnElement::getDeletingStatus() const
 void OwnElement::setDeletingStatus(bool value)
 {
     mbDeleting = value;
+}
+
+void OwnElement::setElemOpacity(float value)
+{
+    mpOpacity->setOpacity(qreal(value));
 }
 
 void OwnElement::setId(int id)

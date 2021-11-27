@@ -12,7 +12,7 @@
 namespace mf {
 
 OwnSlideStackedView::OwnSlideStackedView(int category, QWidget* parent) : QStackedWidget (parent),
-  mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mbIsLeft(true),
+  mpAnime(new QPropertyAnimation(this, QByteArray())), mDuration(500), mWidgetCnt(0), mNextIdx(0), mbIsLeft(true),
   mbIsAnimation(false), mCategory(category), mpParent(parent)
 {
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);

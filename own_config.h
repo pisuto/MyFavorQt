@@ -142,15 +142,6 @@ public:
 
     void initConfig();
 
-    void setTitleStyle(QLabel* pTitle)
-    {
-        QFont font("Microsoft YaHei", 15, QFont::Bold);
-        QPalette pale;
-        pale.setColor(QPalette::WindowText, Qt::white);
-        pTitle->setFont(font);
-        pTitle->setPalette(pale);
-    }
-
     void setFont(QLabel* pLabel, int size = 7, QFont::Weight weight = QFont::Normal)
     {
         QFont font("Microsoft YaHei", size, weight);

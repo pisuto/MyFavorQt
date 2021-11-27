@@ -23,13 +23,15 @@ public:
 
     static QFrame *createNewPage(int start, int category,
                                  QString defaultPath = ":/images/svgtopng/default.png",
-                                 QString defaultTitle = "title",
-                                 QString defaultAuthor = "author",
-                                 QString defaultDesc = "desc");
+                                 QString defaultTitle = "",
+                                 QString defaultAuthor = "",
+                                 QString defaultDesc = "");
 
     static void addPages(QStackedWidget* pWidget, int category);
 
     static void updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITEM_OPER oper);
+
+    static QString strAutoFeed(const QString& text, const QFont& font, int row = 2, int px = 40);
 };
 
 }
