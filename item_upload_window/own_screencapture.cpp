@@ -189,7 +189,7 @@ void OwnScreenCapture::saveScreen()
     int w = screen->getRightDown().x() - x;
     int h = screen->getRightDown().y() - y;
     mpViewer->setPixmap(fullScreen->copy(x, y, w, h));
-    OwnConfig::getInstance()->getMainWindowPtr()->showNormal();
+    OwnConfig::getInstance()->showWindowFromTray();
     this->close();
 }
 

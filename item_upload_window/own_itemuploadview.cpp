@@ -144,7 +144,7 @@ void OwnItemUploadView::updateItem(SQL_ITEM_OPER oper)
     pDataBase->update(item);
 
     // 更新类别数目信息
-    OwnConfig::getInstance()->updateCategoryCount(static_cast<SQL_ITEM_CATEGORY>(item.category.value()));
+    OwnConfig::getInstance()->updateCategoryCount(item.category.value());
 
     // 发送数据变化信号，对整体页面进行更新
     emit sendItemChangedMsg(id, static_cast<int>(oper));
@@ -165,22 +165,22 @@ void OwnItemUploadView::openThisItem(int id)
     if(!pInfo) return;
 
     auto pTitle = qobject_cast<OwnLineEdit*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_TITLE));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_TITLE, SQL_ITEM_OPER::UPDATE));
     if(!pTitle) return;
     auto pAuthor = qobject_cast<OwnLineEdit*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_AUTHOR));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_AUTHOR, SQL_ITEM_OPER::UPDATE));
     if(!pAuthor) return;
     auto pDesc = qobject_cast<OwnLineEdit*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_DESC));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_DESC, SQL_ITEM_OPER::UPDATE));
     if(!pDesc) return;
     auto pViewer = qobject_cast<OwnImageViewer*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_IMAGEPATH));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_IMAGEPATH, SQL_ITEM_OPER::UPDATE));
     if(!pViewer) return;
     auto pCategory = qobject_cast<QComboBox*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_CATEGORY));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_CATEGORY, SQL_ITEM_OPER::UPDATE));
     if(!pCategory) return;
     auto pYear = qobject_cast<OwnLineEdit*>
-            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_CRATEYEAR));
+            (pInfo->getFormInfoByTag(SQL_TABLE_ITEM::ITEM_CRATEYEAR, SQL_ITEM_OPER::UPDATE));
     if(!pYear) return;
 
     auto pDataBase = OwnDatabase::getInstance();

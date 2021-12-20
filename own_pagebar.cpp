@@ -21,8 +21,7 @@ OwnPageBar::OwnPageBar(int maxPages, int blockSize, QWidget* parent) : QWidget(p
     mpCenterPages(new QWidget),
     mpRightSepLabel(new QLabel),
     mpRightPages(new QWidget),
-    mpText1(new QLabel),
-    mpText2(new QLabel),
+    mpText(new QLabel),
     mpPageEdit(new QLineEdit),
     mpLayout(new QHBoxLayout)
 {
@@ -39,9 +38,8 @@ OwnPageBar::OwnPageBar(int maxPages, int blockSize, QWidget* parent) : QWidget(p
     mpLayout->addWidget(mpRightSepLabel);
     mpLayout->addWidget(mpRightPages);
     mpLayout->addWidget(mpNxtPageLabel);
-    mpLayout->addWidget(mpText1);
     mpLayout->addWidget(mpPageEdit);
-    mpLayout->addWidget(mpText2);
+    mpLayout->addWidget(mpText);
     mpLayout->addStretch(1);
     this->setLayout(mpLayout);
 }
@@ -140,11 +138,15 @@ void OwnPageBar::setBlockSize(int blockSize)
 // 分成三个部分, 左...中...右
 void OwnPageBar::initialize()
 {
-    mpText1->setText(QString("cur"));
-    mpText2->setText(QString("page"));
+    mpText->setText(QString("page"));
     auto config = OwnConfig::getInstance();
-    config->setFont(mpText1, 9, QFont::Thin);
-    config->setFont(mpText2, 9, QFont::Thin);
+#ifdef AUTO_SETTING_LOAD
+    const auto& component = config->getSettingData().pagebar;
+    const auto& font = component.fonts[0];
+    mpText->setFont(QFont(font.name.c_str(), font.size, font.weight));
+#else
+    config->setFont(mpText, 9, QFont::Thin);
+#endif
     mpLeftSepLabel->setText("..");
     mpRightSepLabel->setText("..");
     mpPrePageLabel->setText("<<");

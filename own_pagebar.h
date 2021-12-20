@@ -46,8 +46,7 @@ private:
     QWidget* mpCenterPages;
     QLabel* mpRightSepLabel;
     QWidget* mpRightPages;
-    QLabel* mpText1;
-    QLabel* mpText2;
+    QLabel* mpText;
     QLineEdit* mpPageEdit;
 
     QHBoxLayout* mpLayout;

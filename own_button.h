@@ -54,12 +54,14 @@ class OwnButtonGroup : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OwnButtonGroup(int startPos, QWidget* parent = nullptr);
+    explicit OwnButtonGroup(QWidget* parent = nullptr);
     ~OwnButtonGroup() {}
 
     void initButtonConnect();
+    void setNormalButtonSize(QSize btnSize);
     void addButton(OwnButton* pBtn);
     void addStretch(int flag) { mpLayout->addStretch(flag); }
+    void setOffset(size_t offset) { mCurrVal = offset; } /* 必须在初始化时赋值 */
 
 public slots:
     void valueChangedAnimation(QVariant value);

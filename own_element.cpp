@@ -10,17 +10,22 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QAction>
-#include <QGraphicsOpacityEffect>
+#include <QPainter>
 
 namespace mf {
 
 OwnElement::OwnElement(QString fileName, QString title, QString user, QString desc)
     : mpImg(new QImage), mpLable(new QLabel), mpTitle(new QLabel),
-      mpUser(new QLabel), mpDesc(new QLabel), mpLayout(new QGridLayout), mpOpacity(new QGraphicsOpacityEffect(this)),
+      mpUser(new QLabel), mpDesc(new QLabel), mpLayout(new QGridLayout),
       mTitle(title), mUser(user), mDesc(desc), mIdentification(-1), mbDeleting(false)
 {
-    initRightMenu(); // 初始化右键选择
-    this->setGraphicsEffect(mpOpacity); // 透明化
+    // 初始化右键选择
+    initRightMenu();
+    // hiding widget and keeping widget space
+    auto policy = this->sizePolicy();
+    policy.setRetainSizeWhenHidden(true);
+    this->setSizePolicy(policy);
+
     auto pConfig = OwnConfig::getInstance();
     auto imgSize = pConfig->getDisplayImageSize();
     int strWidth = static_cast<int>(imgSize.width() * 0.7);
@@ -28,17 +33,24 @@ OwnElement::OwnElement(QString fileName, QString title, QString user, QString de
     this->setFixedHeight(imgSize.height() * 1.1);
 
     mpLable->setObjectName("own_element_img");
+    mpTitle->setObjectName("own_element_title");
+    mpUser->setObjectName("own_element_user");
+    mpDesc->setObjectName("own_element_desc");
     mpLable->setFixedSize(imgSize);
     this->updateImage(fileName);
     mpLable->setScaledContents(true);
     mpLayout->addWidget(mpLable, 0, 0, 5, 3);
-
-    mpTitle->setObjectName("own_element_title");
-    mpUser->setObjectName("own_element_user");
-    mpDesc->setObjectName("own_element_desc");
+#ifdef AUTO_SETTING_LOAD
+    const auto& component = pConfig->getSettingData().element;
+    const auto& fonts = component.fonts;
+    mpTitle->setFont(QFont(fonts[0].name.c_str(), fonts[0].size, fonts[0].weight));
+    mpUser->setFont(QFont(fonts[1].name.c_str(), fonts[1].size, fonts[1].weight));
+    mpDesc->setFont(QFont(fonts[2].name.c_str(), fonts[2].size, fonts[2].weight));
+#else
     pConfig->setFont(mpTitle, 15, QFont::Bold);
     pConfig->setFont(mpUser, 10);
     pConfig->setFont(mpDesc, 10);
+#endif
     mpTitle->setText(OwnUtil::strAutoFeed(mTitle, mpTitle->font(), 3, strWidth));
     mpUser->setText(OwnUtil::strAutoFeed(mUser, mpUser->font(), 2, strWidth));
     mpDesc->setText(OwnUtil::strAutoFeed(mDesc, mpDesc->font(), 6, strWidth));
@@ -115,11 +127,6 @@ void OwnElement::setDeletingStatus(bool value)
     mbDeleting = value;
 }
 
-void OwnElement::setElemOpacity(float value)
-{
-    mpOpacity->setOpacity(qreal(value));
-}
-
 void OwnElement::setId(int id)
 {
     mIdentification = id;
@@ -142,10 +149,13 @@ int OwnElement::getCategory() const
 
 void OwnElement::setValue(odbitem &item)
 {
+    auto imgSize = OwnConfig::getInstance()->getDisplayImageSize();
+    int strWidth = static_cast<int>(imgSize.width() * 0.7);
+
     this->setId(item.id.value());
-    this->mpTitle->setText(item.title.value());
-    this->mpUser->setText(item.author.value());
-    this->mpDesc->setText(item.desc.value());
+    this->mpTitle->setText(OwnUtil::strAutoFeed(item.title.value(), mpTitle->font(), 3, strWidth));
+    this->mpUser->setText(OwnUtil::strAutoFeed(item.author.value(), mpUser->font(), 2, strWidth));
+    this->mpDesc->setText(OwnUtil::strAutoFeed(item.desc.value(), mpDesc->font(), strWidth));
     this->setCategory(item.category.value());
 
     QString imgPath = SQL_TABLE_ITEM::ImgFileLocation() + "/" +

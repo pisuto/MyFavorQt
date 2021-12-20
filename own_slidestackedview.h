@@ -39,6 +39,7 @@ private:
     void paintNext(QPainter& painter, int index);
 
     void startAnimation(int index);
+    void initRightMenu();
 
 private:
     QPropertyAnimation* mpAnime;

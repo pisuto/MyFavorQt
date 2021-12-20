@@ -28,7 +28,7 @@ public:
     Q_OBJECT
 public:
     explicit OwnMainWidget(QWidget *parent = nullptr);
-    ~OwnMainWidget() override {}
+    ~OwnMainWidget() override;
 
     QSize getTopRightDownPos() const { return QSize(mpTopBtns->geometry().x() + mpTopBtns->width(), mpTopBtns->geometry().y() + mpTopBtns->height()); }
 
@@ -46,6 +46,7 @@ private:
     mf::OwnButtonGroup* mpBtnGrp;
     mf::OwnPageBar* mpPageBar;
     mf::OwnTopButtonGroup* mpTopBtns;
+    mf::OwnItemUploadView* mpItemViewer;
 };
 
 }

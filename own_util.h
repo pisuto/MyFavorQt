@@ -11,9 +11,13 @@ class QStackedWidget;
 
 namespace mf {
 
+class odbitem;
+
 class OwnUtil {
 public:
     static float triangleFunc(float x);
+
+    static void createFile(const QString& fileName);
 
     static bool deleteFile(const QString& path);
 
@@ -29,7 +33,7 @@ public:
 
     static void addPages(QStackedWidget* pWidget, int category);
 
-    static void updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITEM_OPER oper);
+    static void updatePages(QStackedWidget *pWidget, odbitem& item, int category, int id, SQL_ITEM_OPER oper);
 
     static QString strAutoFeed(const QString& text, const QFont& font, int row = 2, int px = 40);
 };

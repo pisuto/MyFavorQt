@@ -20,7 +20,7 @@ class OwnItemUploadForm : public QFrame
     Q_OBJECT
 public:
     explicit OwnItemUploadForm(QWidget* parent = Q_NULLPTR);
-    QWidget* getFormInfoByTag(const QString& tag);
+    QWidget* getFormInfoByTag(const QString& tag, SQL_ITEM_OPER oper = SQL_ITEM_OPER::INSERT);
 
     void clearData();
 

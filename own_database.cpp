@@ -65,17 +65,17 @@ odbitem OwnDatabase::select(odbitem &item)
     return item;
 }
 
-QList<odbitem> OwnDatabase::selectOnePage(int pos, SQL_ITEM_CATEGORY category)
+QList<odbitem> OwnDatabase::selectOnePage(int pos, int count, int category)
 {
     odbitem item;
     QList<odbitem> list;
 
-    item.category = static_cast<int>(category);
-    mQueExecutor.prepare(SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT)).arg(pos));
+    item.category = category;
+    mQueExecutor.prepare(SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(count).arg(pos));
     bindValues(item.category);
     if(!mQueExecutor.exec())
     {
-        qDebug() << "ERROR: " << SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(pos).arg(static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT) - 1) << " "
+        qDebug() << "ERROR: " << SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL.arg(pos).arg(count - 1) << " "
                  << mQueExecutor.lastError();
     }
     else
@@ -113,11 +113,11 @@ bool OwnDatabase::remove(odbitem &item)
     return true;
 }
 
-int OwnDatabase::categoryCount(SQL_ITEM_CATEGORY category)
+int OwnDatabase::categoryCount(int category)
 {
     int cnt = 0;
     odbitem item;
-    item.category = static_cast<int>(category);
+    item.category = category;
     mQueExecutor.prepare(SQL_SYNTAX::QUERY_ITEM_CNT_BY_CATEGORY);
     bindValues(item.category);
     if(!mQueExecutor.exec())

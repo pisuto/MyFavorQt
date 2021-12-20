@@ -45,6 +45,13 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     mpCrop->setFixedSize(OwnConfig::getInstance()->getDisplayImageSize());
     mpYearEdit->setValidator(new QIntValidator(0, 3000, this)); /* 只能输入数字 */
     mpCategoryEdit->clear();
+
+#ifndef AUTO_SETTING_LOAD
+    const auto& categories = OwnConfig::getInstance()->getSettingData().category.categories;
+    for(const auto& info : categories) {
+        mpCategoryEdit->addItem(info.name.c_str());
+    }
+#else
     mpCategoryEdit->addItem(
                 SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::ANIME));
     mpCategoryEdit->addItem(
@@ -55,6 +62,7 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
                 SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::MUSIC));
     mpCategoryEdit->addItem(
                 SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::PHOTO));
+#endif
 
     mpLayout->addWidget(mpTitle);
     mpLayout->addWidget(mpTitleEdit);
@@ -107,11 +115,11 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     });
 }
 
-QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag)
+QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag, SQL_ITEM_OPER oper)
 {
     if(tag == SQL_TABLE_ITEM::ITEM_TITLE)
     {
-        if(mpTitleEdit->text().isEmpty())
+        if(mpTitleEdit->text().isEmpty() && oper == SQL_ITEM_OPER::INSERT)
         {
             mpTitleEdit->setNullStyle();
             return Q_NULLPTR;
@@ -120,7 +128,7 @@ QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag)
     }
     else if(tag == SQL_TABLE_ITEM::ITEM_AUTHOR)
     {
-        if(mpAuthorEdit->text().isEmpty())
+        if(mpAuthorEdit->text().isEmpty() && oper == SQL_ITEM_OPER::INSERT)
         {
             mpAuthorEdit->setNullStyle();
             return Q_NULLPTR;
@@ -129,7 +137,7 @@ QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag)
     }
     else if(tag == SQL_TABLE_ITEM::ITEM_DESC)
     {
-        if(mpDescEdit->text().isEmpty())
+        if(mpDescEdit->text().isEmpty() && oper == SQL_ITEM_OPER::INSERT)
         {
             mpDescEdit->setNullStyle();
             return Q_NULLPTR;
@@ -146,7 +154,7 @@ QWidget *OwnItemUploadForm::getFormInfoByTag(const QString &tag)
     }
     else if(tag == SQL_TABLE_ITEM::ITEM_CRATEYEAR)
     {
-        if(mpYearEdit->text().isEmpty())
+        if(mpYearEdit->text().isEmpty() && oper == SQL_ITEM_OPER::INSERT)
         {
             mpYearEdit->setNullStyle();
             return Q_NULLPTR;

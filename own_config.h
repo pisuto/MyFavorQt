@@ -11,17 +11,14 @@
 #include <QDir>
 #include <QDebug>
 
+#include "own_reflection/own_reflect_item.h"
+
 namespace mf {
 
-// 对元素的操作类型
-enum class SQL_ITEM_OPER
-{
-    NONE,
-    INSERT,
-    UPDATE,
-    DELETE,
-};
+#define AUTO_SETTING_LOAD
+#undef AUTO_SETTING_LOAD
 
+#ifndef AUTO_SETTING_LOAD
 // 展示的图片大小
 enum class IMAGE_DISPLAY_SIZE
 {
@@ -47,6 +44,16 @@ enum class SQL_PAGE_ITEM_GRID
     COL   = 3,
     COUNT = ROW * COL,
 };
+#endif
+
+// 对元素的操作类型
+enum class SQL_ITEM_OPER
+{
+    NONE,
+    INSERT,
+    UPDATE,
+    DELETE,
+};
 
 // sql相关全局数据
 struct SQL_TABLE_ITEM
@@ -65,6 +72,8 @@ struct SQL_TABLE_ITEM
 
     static QString ImgFileLocation() { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/MyFavor"; }
     static QString Placeholder(const QString& item) { return ":" + item; }
+
+#ifndef AUTO_SETTING_LOAD
     static QString CategoryToString(SQL_ITEM_CATEGORY index)  {
         switch (index)
         {
@@ -83,6 +92,8 @@ struct SQL_TABLE_ITEM
 
         }
     }
+#endif
+
 };
 
 struct SQL_SYNTAX
@@ -137,37 +148,54 @@ class OwnItemUploadView;
 class OwnConfig : public OwnSingleton<OwnConfig>
 {
 public:
-    OwnConfig() : mpMainWindow(Q_NULLPTR), mpItemViewer(Q_NULLPTR) {}
+    OwnConfig() : mpMainWindow(Q_NULLPTR), mpItemViewer(Q_NULLPTR),
+        helper(new ref::xml_parser("setting.xml")) {}
     ~OwnConfig() {}
 
-    void initConfig();
+    void init();
+    void save() { helper.write(data); }
 
+#ifndef AUTO_SETTING_LOAD
     void setFont(QLabel* pLabel, int size = 7, QFont::Weight weight = QFont::Normal)
     {
         QFont font("Microsoft YaHei", size, weight);
         pLabel->setFont(font);
     }
+#endif
+
+#ifndef AUTO_SETTING_LOAD
+    QSize getDisplayImageSize() const { return QSize(static_cast<int>(IMAGE_DISPLAY_SIZE::WIDTH), static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT)); }
+#else
+    QSize getDisplayImageSize() const {
+        const auto& image = data.screen.resogrp[data.screen.index].image;
+        return QSize(static_cast<int>(image.width), static_cast<int>(image.height));
+    }
+#endif
+    oconfig& getSettingData() { return data; }
 
     const QVector<int>& getCategoryCount() const { return mPageCount; }
-    void updateCategoryCount(SQL_ITEM_CATEGORY category);
-
-    QSize getDisplayImageSize() const { return QSize(static_cast<int>(IMAGE_DISPLAY_SIZE::WIDTH), static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT)); }
+    void updateCategoryCount(int category);
 
     QWidget* getMainWindowPtr() const { return mpMainWindow; }
     void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
 
-    void setTrayed(bool result) { mbTrayed = result; }
-    bool getTrayed() const { return mbTrayed; }
+    void setTrayed(bool result) { data.trayed = result; }
+    bool getTrayed() const { return data.trayed; }
+
     void hideWindowToTray();
     void showWindowFromTray();
 
     OwnItemUploadView *getItemViewer();
+    void setItemUploadView(OwnItemUploadView* ptr);
 
 private:
     QVector<int> mPageCount;
     QWidget* mpMainWindow;
     mf::OwnItemUploadView* mpItemViewer;
-    bool mbTrayed;
+
+    /* 全局配置数据 */
+    oconfig data;
+    ref::format_helper helper;
 };
 
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,6 +39,9 @@ SOURCES += \
         own_lineedit.cpp \
         own_mainwidget.cpp \
         own_pagebar.cpp \
+    own_reflection/own_reflect_item.cpp \
+    own_reflection/reflection/ref_define.cpp \
+    own_reflection/tool/ref_parser.cpp \
         own_slidestackedview.cpp \
         item_upload_window/own_itemuploadview.cpp \
         own_util.cpp
@@ -58,6 +61,12 @@ HEADERS += \
         own_lineedit.h \
         own_mainwidget.h \
         own_pagebar.h \
+        own_reflection/own_reflect_item.h \
+        own_reflection/reflection/ref_base.h \
+        own_reflection/reflection/ref_define.h \
+        own_reflection/reflection/ref_traits.h \
+        own_reflection/tool/ref_helper.h \
+        own_reflection/tool/ref_parser.h \
         own_slidestackedview.h \
         own_util.h
 

@@ -22,6 +22,16 @@ float OwnUtil::triangleFunc(float x)
     return 0.f;
 }
 
+void OwnUtil::createFile(const QString &fileName)
+{
+    QFileInfo info(fileName);
+    if(info.isFile())
+       return;
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    file.close();
+}
+
 bool OwnUtil::deleteFile(const QString &path)
 {
     if(path.isEmpty() || !QDir().exists(path))
@@ -53,18 +63,30 @@ QImage OwnUtil::getImgWithOverlay(const QImage &base, const QImage &overlay)
 
 int OwnUtil::getPages(int category)
 {
-    auto count = OwnConfig::getInstance()->getCategoryCount()[category - 1];
+    auto pConfig = OwnConfig::getInstance();
+#ifdef AUTO_SETTING_LOAD
+    const auto& grid = pConfig->getSettingData().screen.grid;
+    auto grids = static_cast<int>(grid.row * grid.col);
+#else
     auto grids = static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT);
+#endif
+    auto count = pConfig->getCategoryCount()[category - 1];
     return count % grids == 0 ? count / grids : count / grids + 1;
 }
 
 QFrame *OwnUtil::createNewPage(int start, int category, QString defaultPath, QString defaultTitle, QString defaultAuthor, QString defaultDesc)
 {
     auto pDataBase = OwnDatabase::getInstance();
-    auto list = pDataBase->selectOnePage(start, static_cast<SQL_ITEM_CATEGORY>(category));
     auto pTmpLayout = new QGridLayout();
+#ifdef AUTO_SETTING_LOAD
+    const auto grid = OwnConfig::getInstance()->getSettingData().screen.grid;
+    int row = static_cast<int>(grid.row);
+    int col = static_cast<int>(grid.col);
+#else
     int row = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::ROW);
     int col = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::COL);
+#endif
+    auto list = pDataBase->selectOnePage(start, row * col, category);
     for(int i = 0; i < row; ++i)
     {
         for(int j = 0; j < col; ++j)
@@ -80,7 +102,7 @@ QFrame *OwnUtil::createNewPage(int start, int category, QString defaultPath, QSt
             }
             else {
                 elem = new OwnElement(defaultPath, defaultTitle, defaultAuthor, defaultDesc);
-                elem->setElemOpacity(0);
+                elem->setVisible(0);
             }
             elem->setCategory(category);
             pTmpLayout->addWidget(elem, i, j, 1, 1);
@@ -95,8 +117,13 @@ QFrame *OwnUtil::createNewPage(int start, int category, QString defaultPath, QSt
 void OwnUtil::addPages(QStackedWidget *pWidget, int category)
 {
     auto pDataBase = OwnDatabase::getInstance();
-    auto grids = static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT);
     auto pages = getPages(category);
+#ifdef AUTO_SETTING_LOAD
+    const auto& grid = OwnConfig::getInstance()->getSettingData().screen.grid;
+    auto grids = static_cast<int>(grid.row * grid.col);
+#else
+    auto grids = static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT);
+#endif
 
     if(pages == 0) pages = 1;
     for(int i = 0; i < pages; ++i)
@@ -106,18 +133,8 @@ void OwnUtil::addPages(QStackedWidget *pWidget, int category)
     }
 }
 
-void OwnUtil::updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITEM_OPER oper)
+void OwnUtil::updatePages(QStackedWidget *pWidget, odbitem& item, int category, int id, SQL_ITEM_OPER oper)
 {
-    // 获取新插入的数据
-    auto pDataBase = OwnDatabase::getInstance();
-    odbitem item;
-    item.id = id;
-    item = pDataBase->select(item);
-    if(item.category.value() != category) // 如果不是一个类别的直接返回
-    {
-        return;
-    }
-
     QGridLayout* pLayout = Q_NULLPTR;
     if(SQL_ITEM_OPER::INSERT == oper)
     {
@@ -132,8 +149,14 @@ void OwnUtil::updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITE
 
     // 寻找空的元素或者是待更新和删除的元素
     OwnElement* elem = Q_NULLPTR;
+#ifdef AUTO_SETTING_LOAD
+    const auto grid = OwnConfig::getInstance()->getSettingData().screen.grid;
+    int row = static_cast<int>(grid.row);
+    int col = static_cast<int>(grid.col);
+#else
     int row = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::ROW);
     int col = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::COL);
+#endif
     int i = 0, j = 0;
     bool flag = false;
     for(; i < row; ++i)
@@ -156,7 +179,7 @@ void OwnUtil::updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITE
     // 如果已经满了则需要另外新增页面，否则直接更新当前元素，最后或者是删除元素更新整个界面
     if(i == row && j == col && SQL_ITEM_OPER::INSERT == oper)
     {
-        int start = getPages(category) * row * col;
+        int start = (getPages(category) - 1) * row * col;
         pWidget->addWidget(createNewPage(start, category));
     }
     else if(SQL_ITEM_OPER::INSERT == oper || SQL_ITEM_OPER::UPDATE == oper)
@@ -166,10 +189,10 @@ void OwnUtil::updatePages(QStackedWidget *pWidget, int category, int id, SQL_ITE
     else if(SQL_ITEM_OPER::DELETE == oper)
     {
         // 更新整体页面
-        pDataBase->storeDeletingItem(item);
+        OwnDatabase::getInstance()->storeDeletingItem(item);
         elem->deleting();
     }
-    elem->setElemOpacity(1);
+    elem->setVisible(1);
 }
 
 QString OwnUtil::strAutoFeed(const QString &text, const QFont& font, int row, int px)

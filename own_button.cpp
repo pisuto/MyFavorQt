@@ -9,9 +9,9 @@
 
 namespace mf {
 
-OwnButtonGroup::OwnButtonGroup(int startPos, QWidget* parent) : QWidget(parent),
+OwnButtonGroup::OwnButtonGroup(QWidget* parent) : QWidget(parent),
     mpAnime(new QPropertyAnimation(this, QByteArray())), mpLayout(new QHBoxLayout),
-    mCurIdx(0), mPreIdx(0), mCurrVal(startPos), mBtnSize(QSize()), mLineHeight(3),
+    mCurIdx(0), mPreIdx(0), mBtnSize(QSize()), mLineHeight(3),
     mLineColor(QColor(20, 20, 20))
 {
     mpAnime->setDuration(300);
@@ -19,20 +19,12 @@ OwnButtonGroup::OwnButtonGroup(int startPos, QWidget* parent) : QWidget(parent),
     mpLayout->setContentsMargins(0, 0, 0, 0);
     mpLayout->setSpacing(0);
     this->setLayout(mpLayout);
-    setAttribute(Qt::WidgetAttribute::WA_StyledBackground);  // 重要
-//    connect(mpBtnGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-//            this, &OwnButtonGroup::onButtonClicked);
+    this->setAttribute(Qt::WidgetAttribute::WA_StyledBackground);  // 重要
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnButtonGroup::valueChangedAnimation);
 }
 
 void OwnButtonGroup::addButton(OwnButton *pBtn)
 {
-    pBtn->setFixedSize(80,30);
-    mBtnSize = pBtn->size();
-    if(pBtn->text().isNull())
-    {
-        pBtn->setFixedSize(40,30);
-    }
     mBtnGrp.push_back(pBtn);
     mpLayout->addWidget(pBtn);
 }
@@ -98,6 +90,11 @@ void OwnButtonGroup::initButtonConnect()
     {
         connect(mBtnGrp[i], &OwnButton::sendIndex, this, &OwnButtonGroup::onButtonClicked);
     }
+}
+
+void OwnButtonGroup::setNormalButtonSize(QSize btnSize)
+{
+    mBtnSize = btnSize;
 }
 
 void OwnTopButtonGroup::checkTrayed()

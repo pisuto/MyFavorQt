@@ -4,9 +4,6 @@
 #include <QApplication>
 #include <QFile>
 
-#include "own_database.h"
-#include "own_database_item.h"
-
 int main(int argc, char *argv[])
 {
     // 不清晰解决
@@ -25,21 +22,13 @@ int main(int argc, char *argv[])
     }
     // 初始化配置
     auto spConfig = mf::OwnConfig::getInstance();
-    spConfig->initConfig();
-
-#if 0
-    mf::odbitem item;
-    item.id = 1;
-    item.create_year = 2011;
-    item.title = "no";
-    mf::OwnDatabase db;
-    db.insert(item);
-    db.select(item);
-#endif
+    spConfig->init();
 
     MainWindow w;
     spConfig->setMainWindowPtr(&w);
     w.show();
 
+    // 结束时保存配置
+    spConfig->save();
     return a.exec();
 }

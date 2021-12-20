@@ -98,7 +98,7 @@ const QString SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL =
 /*--------------------------------------------------------------------------*/
 
 
-void OwnConfig::initConfig()
+void OwnConfig::init()
 {
     // 在我的文档下面创建文件夹放置图片
     QString location = SQL_TABLE_ITEM::ImgFileLocation();
@@ -118,13 +118,16 @@ void OwnConfig::initConfig()
     mPageCount = QVector<int>(categoryCnt, 0);
     for(int i = 1; i < categoryCnt; ++ i)
     {
-        updateCategoryCount(static_cast<SQL_ITEM_CATEGORY>(i));
+        updateCategoryCount(i);
     }
 
     setTrayed(false);
+
+    // 初始化全局数据
+    helper.read(data);
 }
 
-void OwnConfig::updateCategoryCount(SQL_ITEM_CATEGORY category)
+void OwnConfig::updateCategoryCount(int category)
 {
     auto index = static_cast<int>(category) - 1;
     auto cnt = OwnDatabase::getInstance()->categoryCount(category);
@@ -145,11 +148,12 @@ void OwnConfig::showWindowFromTray()
 
 OwnItemUploadView *OwnConfig::getItemViewer()
 {
-    if(!mpItemViewer)
-    {
-        mpItemViewer = new OwnItemUploadView();
-    }
     return mpItemViewer;
+}
+
+void OwnConfig::setItemUploadView(OwnItemUploadView *ptr)
+{
+    mpItemViewer = ptr;
 }
 
 }

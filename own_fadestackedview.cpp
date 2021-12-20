@@ -1,8 +1,8 @@
 #include "own_fadestackedview.h"
 #include "own_slidestackedview.h"
+#include "own_util.h"
 
 #include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
 #include <QGraphicsOpacityEffect>
 #include <QDebug>
 
@@ -15,7 +15,6 @@ OwnFadeStackedView::OwnFadeStackedView(OwnPageBar* pageBar, QWidget* parent) :
     mWidgetCnt(0),
     mNextIdx(0),
     mCurrIdx(0),
-    mStartColor(parent ? parent->palette().window().color() : Qt::white),
     mbIsAnimation(false),
     mpPageBar(pageBar)
 {
@@ -28,6 +27,11 @@ void OwnFadeStackedView::switchWidget(int index)
     if(index == mNextIdx)
         return;
     startAnimation(index);
+    if(mpPageBar)
+    {
+        mpPageBar->setMaxPage(OwnUtil::getPages(index + 1));
+        mpPageBar->setCurrentPage(0, true);
+    }
 }
 
 void OwnFadeStackedView::startAnimation(int index)

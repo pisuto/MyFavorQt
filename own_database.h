@@ -23,10 +23,10 @@ public:
     odbitem select(odbitem& item);
     void update(odbitem& item);
     bool remove(odbitem& item);
-    int categoryCount(SQL_ITEM_CATEGORY category);
+    int categoryCount(int category);
 
     /* 输入的pos为一页的起始 */
-    QList<odbitem> selectOnePage(int pos, SQL_ITEM_CATEGORY category);
+    QList<odbitem> selectOnePage(int pos, int count, int category);
     /* 保存即将删除的元素，在退出时全部删除 */
     void storeDeletingItem(odbitem& item);
     void removeDeletingItem(int id);
