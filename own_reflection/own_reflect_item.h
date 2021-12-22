@@ -54,7 +54,7 @@ struct obtngrp {
 
 /* screen */
 struct resolution {
-    osize screen;
+    osize size;
     osize image;
 
     REFLECT(resolution)

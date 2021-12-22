@@ -75,11 +75,12 @@ namespace ref {
 
 	void xml_parser::write_customize_type(type_descriptor*  type_desc, const void* obj, int level)
 	{
-		bool var_exist = true;
+        bool var_exist = true;
 		/* 有var_name表示其是结构的成员，无须再显示，否则会使得文件太过冗杂，同时需考虑数组类型 */
-		if (condition.var_name.empty() || condition.is_array) {
+        if (condition.end_var_names.empty() || condition.is_array) {
 			out << std::string(4 * level, ' ') << "<" << type_desc->full_name() << ">" << std::endl;
-			var_exist = false;
+            var_exist = false;
+            condition.is_array = false;
 		}
 		std::vector<type_member> members;
 		type_desc->type_members(members);
@@ -89,15 +90,15 @@ namespace ref {
 			if (check_if_customize_type(member.type_desc->type_class)) {
 				out << std::endl;
 			}
-			condition.var_name = member.var_name;
+            condition.end_var_names.push(member.var_name);
 			member.type_desc->serialize(this, (char*)obj + member.offset, level + 1);
-			condition.var_name.clear();
+            condition.end_var_names.pop();
 			if (check_if_customize_type(member.type_desc->type_class)) {
 				out << std::string(4 * (level + 1), ' ');
 			}
 			out << "</" << member.var_name << ">" << std::endl;
 		}
-		if (!var_exist) {
+        if (!var_exist) {
 			out << std::string(4 * level, ' ') << "</" << type_desc->full_name() << ">" << std::endl;
 		}
 
@@ -109,7 +110,6 @@ namespace ref {
 			return;
 		}
 		bool first_time = false; /* 去除换行符的影响 */
-		condition.is_array = true; 
 		out << std::endl;
 		for (size_t index = 0; index < size; ++index) {
 			/* 考虑数组元素的内置类型显示形式和自定义类型一致 */
@@ -121,6 +121,7 @@ namespace ref {
 					<< "<" << type_desc->full_name() << ">";
 				first_time = true;
 			}
+            condition.is_array = true;
 			type_desc->serialize(this, get_item_func(obj, index), level + 1);
 			if (check_if_native_type(type_desc->type_class)) {
 				out << "</" << type_desc->full_name() << ">";
