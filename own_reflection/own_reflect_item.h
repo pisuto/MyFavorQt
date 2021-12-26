@@ -26,6 +26,25 @@ struct oimage {
     REFLECT(oimage)
 };
 
+struct ofont {
+    std::string key; /* 标明widget的名字，其实是按照顺序来 */
+    int extent;
+    int weight;
+    std::string name;
+    std::string style;
+
+    REFLECT(ofont)
+};
+
+struct orgba {
+    int red;
+    int green;
+    int blue;
+    int alpha;
+
+    REFLECT(orgba)
+};
+
 /* category */
 struct ocategory {
     std::vector<oimage> categories;
@@ -38,6 +57,8 @@ struct obutton {
     int id;
     osize size;
     osize icon;
+    ofont font;
+    std::vector<orgba> colors; /* 对应不同的状态 */
 
     REFLECT(obutton)
 };
@@ -53,36 +74,32 @@ struct obtngrp {
 
 
 /* screen */
-struct resolution {
+struct oresolution {
     osize size;
     osize image;
 
-    REFLECT(resolution)
+    REFLECT(oresolution)
 };
 
 struct oscreen {
     size_t index; /* 选中的分辨率 */
     ogrid grid;   /* 分布情况 */
-    std::vector<resolution> resogrp;
+    std::vector<oresolution> resogrp;
 
     REFLECT(oscreen)
 };
 
 /* component */
-struct ofont {
-    std::string key; /* 标明widget的名字，其实是按照顺序来 */
-    int size;
-    int weight;
-    std::string name;
-    std::string style;
-
-    REFLECT(ofont)
-};
-
 struct ocomponent {
     std::vector<ofont> fonts;
 
     REFLECT(ocomponent)
+};
+
+struct osetting {
+    obtngrp btngrp;
+
+    REFLECT(osetting)
 };
 
 /* configuration */
@@ -94,6 +111,7 @@ struct oconfig {
     obtngrp btngrp;
     ocomponent element;
     ocomponent pagebar;
+    osetting setting;
 
     REFLECT(oconfig)
 };

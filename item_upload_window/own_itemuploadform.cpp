@@ -46,23 +46,10 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     mpYearEdit->setValidator(new QIntValidator(0, 3000, this)); /* 只能输入数字 */
     mpCategoryEdit->clear();
 
-#ifndef AUTO_SETTING_LOAD
     const auto& categories = OwnConfig::getInstance()->getSettingData().category.categories;
     for(const auto& info : categories) {
         mpCategoryEdit->addItem(info.name.c_str());
     }
-#else
-    mpCategoryEdit->addItem(
-                SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::ANIME));
-    mpCategoryEdit->addItem(
-                SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::MANGA));
-    mpCategoryEdit->addItem(
-                SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::MOVIE));
-    mpCategoryEdit->addItem(
-                SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::MUSIC));
-    mpCategoryEdit->addItem(
-                SQL_TABLE_ITEM::CategoryToString(SQL_ITEM_CATEGORY::PHOTO));
-#endif
 
     mpLayout->addWidget(mpTitle);
     mpLayout->addWidget(mpTitleEdit);

@@ -14,31 +14,24 @@ class QPropertyAnimation;
 
 namespace mf {
 
+enum BTN_GRP_LAYOUT {
+    VERTICAL = 0,
+    HORIZONTAL = 1,
+};
+
 class OwnButton : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit OwnButton(const int& index, const QString& text, QWidget* parent = nullptr) :
-        QPushButton(text, parent), mIndex(index)
-    {
-        auto style = QString("QPushButton{background-color:rgba(220,220,220,200);border:none;font-family:'Microsoft YaHei';}"
-                             "QPushButton:hover{background-color:rgba(211,211,211,200);}"
-                             "QPushButton:pressed{background-color:rgba(105,105,105,200);}");
-        this->setStyleSheet(style);
-        connect(this, &QPushButton::clicked, this, &OwnButton::ownButtonClicked);
-    }
-    OwnButton(const int& index, const QIcon& icon, const QString &text, QWidget* parent = nullptr) :
-        QPushButton(icon, text, parent), mIndex(index)
-    {
-        auto style = QString("QPushButton{background-color:rgba(255,255,255,40);border:none;font-family:'Microsoft YaHei';}"
-                             "QPushButton:hover{background-color:rgba(211,211,211,40);}"
-                             "QPushButton:pressed{background-color:rgba(105,105,105,80);}");
-        this->setStyleSheet(style);
-        connect(this, &QPushButton::clicked, this, &OwnButton::ownButtonClicked);
-    }
+    explicit OwnButton(const int& index, const QString& text, QWidget* parent = Q_NULLPTR) :
+        QPushButton(text, parent), mIndex(index) {}
+    OwnButton(const int& index, const QIcon& icon, const QString& text, QWidget* parent = Q_NULLPTR) :
+        QPushButton(icon, text, parent), mIndex(index) {}
     ~OwnButton() {}
 
     int geIndex() { return mIndex; }
+    void setButtonStyle(int font = 15, QRgb normal = qRgba(255, 255, 255, 40),
+                    QRgb hover = qRgba(211, 211, 211, 40), QRgb pressed = qRgba(105, 105, 105, 80), QString family = "Microsoft YaHei UI");
 
 signals:
     void sendIndex(int index);
@@ -54,15 +47,14 @@ class OwnButtonGroup : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OwnButtonGroup(QWidget* parent = nullptr);
+    explicit OwnButtonGroup(QWidget* parent = nullptr, BTN_GRP_LAYOUT type = BTN_GRP_LAYOUT::HORIZONTAL);
     ~OwnButtonGroup() {}
 
     void initButtonConnect();
     void setNormalButtonSize(QSize btnSize);
     void addButton(OwnButton* pBtn);
     void addStretch(int flag) { mpLayout->addStretch(flag); }
-    void setOffset(size_t offset) { mCurrVal = offset; } /* 必须在初始化时赋值 */
-
+    void setOffset(size_t val) { mCurrVal = val; }
 public slots:
     void valueChangedAnimation(QVariant value);
     void onButtonClicked(int index);
@@ -76,15 +68,15 @@ private:
 private:
     QPropertyAnimation* mpAnime;
     QVector<OwnButton*> mBtnGrp;
-    QHBoxLayout* mpLayout;
+    QBoxLayout* mpLayout;
 
     int mCurIdx;
     int mPreIdx;
     QVariant mCurrVal;
     QSize mBtnSize;
-    int mLineHeight;
+    int mLineWeight;
     QColor mLineColor;
-
+    BTN_GRP_LAYOUT mType;
 };
 
 class OwnTopButtonGroup : public QWidget

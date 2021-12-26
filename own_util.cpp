@@ -64,12 +64,10 @@ QImage OwnUtil::getImgWithOverlay(const QImage &base, const QImage &overlay)
 int OwnUtil::getPages(int category)
 {
     auto pConfig = OwnConfig::getInstance();
-#ifdef AUTO_SETTING_LOAD
+
     const auto& grid = pConfig->getSettingData().screen.grid;
     auto grids = static_cast<int>(grid.row * grid.col);
-#else
-    auto grids = static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT);
-#endif
+
     auto count = pConfig->getCategoryCount()[category - 1];
     return count % grids == 0 ? count / grids : count / grids + 1;
 }
@@ -78,14 +76,11 @@ QFrame *OwnUtil::createNewPage(int start, int category, QString defaultPath, QSt
 {
     auto pDataBase = OwnDatabase::getInstance();
     auto pTmpLayout = new QGridLayout();
-#ifdef AUTO_SETTING_LOAD
+
     const auto grid = OwnConfig::getInstance()->getSettingData().screen.grid;
     int row = static_cast<int>(grid.row);
     int col = static_cast<int>(grid.col);
-#else
-    int row = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::ROW);
-    int col = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::COL);
-#endif
+
     auto list = pDataBase->selectOnePage(start, row * col, category);
     for(int i = 0; i < row; ++i)
     {
@@ -118,12 +113,8 @@ void OwnUtil::addPages(QStackedWidget *pWidget, int category)
 {
     auto pDataBase = OwnDatabase::getInstance();
     auto pages = getPages(category);
-#ifdef AUTO_SETTING_LOAD
     const auto& grid = OwnConfig::getInstance()->getSettingData().screen.grid;
     auto grids = static_cast<int>(grid.row * grid.col);
-#else
-    auto grids = static_cast<int>(SQL_PAGE_ITEM_GRID::COUNT);
-#endif
 
     if(pages == 0) pages = 1;
     for(int i = 0; i < pages; ++i)
@@ -149,14 +140,10 @@ void OwnUtil::updatePages(QStackedWidget *pWidget, odbitem& item, int category, 
 
     // 寻找空的元素或者是待更新和删除的元素
     OwnElement* elem = Q_NULLPTR;
-#ifdef AUTO_SETTING_LOAD
     const auto grid = OwnConfig::getInstance()->getSettingData().screen.grid;
     int row = static_cast<int>(grid.row);
     int col = static_cast<int>(grid.col);
-#else
-    int row = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::ROW);
-    int col = static_cast<int>(mf::SQL_PAGE_ITEM_GRID::COL);
-#endif
+
     int i = 0, j = 0;
     bool flag = false;
     for(; i < row; ++i)

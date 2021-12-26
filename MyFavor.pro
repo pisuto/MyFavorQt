@@ -42,6 +42,7 @@ SOURCES += \
     own_reflection/own_reflect_item.cpp \
     own_reflection/reflection/ref_define.cpp \
     own_reflection/tool/ref_parser.cpp \
+    own_settingview.cpp \
         own_slidestackedview.cpp \
         item_upload_window/own_itemuploadview.cpp \
         own_util.cpp
@@ -67,6 +68,7 @@ HEADERS += \
         own_reflection/reflection/ref_traits.h \
         own_reflection/tool/ref_helper.h \
         own_reflection/tool/ref_parser.h \
+        own_settingview.h \
         own_slidestackedview.h \
         own_util.h
 

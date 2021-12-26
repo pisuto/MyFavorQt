@@ -15,37 +15,6 @@
 
 namespace mf {
 
-#define AUTO_SETTING_LOAD
-#undef AUTO_SETTING_LOAD
-
-#ifndef AUTO_SETTING_LOAD
-// 展示的图片大小
-enum class IMAGE_DISPLAY_SIZE
-{
-    WIDTH = 185,
-    HEIGHT = 300,
-};
-
-// 标签类型
-enum class SQL_ITEM_CATEGORY
-{
-    EMPTY = 0,
-    ANIME = 1,
-    MANGA = 2,
-    MOVIE = 3,
-    MUSIC = 4,
-    PHOTO = 5,
-    COUNT = 5,
-};
-
-enum class SQL_PAGE_ITEM_GRID
-{
-    ROW   = 3,
-    COL   = 3,
-    COUNT = ROW * COL,
-};
-#endif
-
 // 对元素的操作类型
 enum class SQL_ITEM_OPER
 {
@@ -72,27 +41,6 @@ struct SQL_TABLE_ITEM
 
     static QString ImgFileLocation() { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/MyFavor"; }
     static QString Placeholder(const QString& item) { return ":" + item; }
-
-#ifndef AUTO_SETTING_LOAD
-    static QString CategoryToString(SQL_ITEM_CATEGORY index)  {
-        switch (index)
-        {
-        case SQL_ITEM_CATEGORY::ANIME:
-            return "Anime";
-        case SQL_ITEM_CATEGORY::MANGA:
-            return  "Manga";
-        case SQL_ITEM_CATEGORY::MOVIE:
-            return "Movie";
-        case SQL_ITEM_CATEGORY::MUSIC:
-            return "Music";
-        case SQL_ITEM_CATEGORY::PHOTO:
-            return "Photo";
-        default:
-            return "Null";
-
-        }
-    }
-#endif
 
 };
 
@@ -155,36 +103,19 @@ public:
     void init();
     void save() { helper.write(data); }
 
-#ifndef AUTO_SETTING_LOAD
-    void setFont(QLabel* pLabel, int size = 7, QFont::Weight weight = QFont::Normal)
-    {
-        QFont font("Microsoft YaHei", size, weight);
-        pLabel->setFont(font);
-    }
-#endif
-
-#ifndef AUTO_SETTING_LOAD
-    QSize getDisplayImageSize() const { return QSize(static_cast<int>(IMAGE_DISPLAY_SIZE::WIDTH), static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT)); }
-#else
     QSize getDisplayImageSize() const {
         const auto& image = data.screen.resogrp[data.screen.index].image;
         return QSize(static_cast<int>(image.width), static_cast<int>(image.height));
     }
-#endif
-    oconfig& getSettingData() { return data; }
 
+    oconfig& getSettingData() { return data; }
     const QVector<int>& getCategoryCount() const { return mPageCount; }
     void updateCategoryCount(int category);
 
     QWidget* getMainWindowPtr() const { return mpMainWindow; }
     void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
-
-    void setTrayed(bool result) { data.trayed = result; }
-    bool getTrayed() const { return data.trayed; }
-
     void hideWindowToTray();
     void showWindowFromTray();
-
     OwnItemUploadView *getItemViewer();
     void setItemUploadView(OwnItemUploadView* ptr);
 

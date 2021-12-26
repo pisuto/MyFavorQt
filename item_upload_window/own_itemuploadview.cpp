@@ -76,7 +76,9 @@ void OwnItemUploadView::mouseMoveEvent(QMouseEvent* event)
 {
     if (event->buttons() & Qt::LeftButton)
     {
-        if(mDragPos.y() > static_cast<int>(IMAGE_DISPLAY_SIZE::HEIGHT) / 10)
+
+        auto imgHeight = OwnConfig::getInstance()->getDisplayImageSize().height();
+        if(mDragPos.y() > imgHeight / 10)
             return;
         auto desktopRc = QApplication::desktop()->availableGeometry();
         auto curPoint = event->globalPos() - mDragPos;

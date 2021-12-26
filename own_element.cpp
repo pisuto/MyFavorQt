@@ -40,17 +40,13 @@ OwnElement::OwnElement(QString fileName, QString title, QString user, QString de
     this->updateImage(fileName);
     mpLable->setScaledContents(true);
     mpLayout->addWidget(mpLable, 0, 0, 5, 3);
-#ifdef AUTO_SETTING_LOAD
+    /* 设置字体 */
     const auto& component = pConfig->getSettingData().element;
     const auto& fonts = component.fonts;
-    mpTitle->setFont(QFont(fonts[0].name.c_str(), fonts[0].size, fonts[0].weight));
-    mpUser->setFont(QFont(fonts[1].name.c_str(), fonts[1].size, fonts[1].weight));
-    mpDesc->setFont(QFont(fonts[2].name.c_str(), fonts[2].size, fonts[2].weight));
-#else
-    pConfig->setFont(mpTitle, 15, QFont::Bold);
-    pConfig->setFont(mpUser, 10);
-    pConfig->setFont(mpDesc, 10);
-#endif
+    mpTitle->setFont(QFont(fonts[0].name.c_str(), fonts[0].extent, fonts[0].weight));
+    mpUser->setFont(QFont(fonts[1].name.c_str(), fonts[1].extent, fonts[1].weight));
+    mpDesc->setFont(QFont(fonts[2].name.c_str(), fonts[2].extent, fonts[2].weight));
+
     mpTitle->setText(OwnUtil::strAutoFeed(mTitle, mpTitle->font(), 3, strWidth));
     mpUser->setText(OwnUtil::strAutoFeed(mUser, mpUser->font(), 2, strWidth));
     mpDesc->setText(OwnUtil::strAutoFeed(mDesc, mpDesc->font(), 6, strWidth));

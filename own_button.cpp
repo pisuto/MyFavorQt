@@ -9,13 +9,18 @@
 
 namespace mf {
 
-OwnButtonGroup::OwnButtonGroup(QWidget* parent) : QWidget(parent),
-    mpAnime(new QPropertyAnimation(this, QByteArray())), mpLayout(new QHBoxLayout),
-    mCurIdx(0), mPreIdx(0), mBtnSize(QSize()), mLineHeight(3),
-    mLineColor(QColor(20, 20, 20))
+OwnButtonGroup::OwnButtonGroup(QWidget* parent, BTN_GRP_LAYOUT type) : QWidget(parent),
+    mpAnime(new QPropertyAnimation(this, QByteArray())),
+    mCurIdx(0), mPreIdx(0), mCurrVal(0), mBtnSize(QSize()),
+    mLineWeight(3), mLineColor(QColor(20, 20, 20)), mType(type)
 {
+    if(mType == BTN_GRP_LAYOUT::HORIZONTAL) {
+        mpLayout = new QHBoxLayout;
+    }
+    else {
+        mpLayout = new QVBoxLayout;
+    }
     mpAnime->setDuration(300);
-
     mpLayout->setContentsMargins(0, 0, 0, 0);
     mpLayout->setSpacing(0);
     this->setLayout(mpLayout);
@@ -37,29 +42,58 @@ void OwnButtonGroup::valueChangedAnimation(QVariant value)
 
 QRectF OwnButtonGroup::getCurrLength(double value)
 {
-    auto length = mBtnGrp[mCurIdx]->pos().x() - mBtnGrp[mPreIdx]->pos().x();
-    auto offset = value - mBtnGrp[mPreIdx]->pos().x();
-    auto ratio = OwnUtil::triangleFunc(length == 0 ? 0.f : offset / length);
-    auto base = qAbs(length / mBtnSize.width());
+    if(mType == BTN_GRP_LAYOUT::HORIZONTAL)
+    {
+        auto length = mBtnGrp[mCurIdx]->pos().x() - mBtnGrp[mPreIdx]->pos().x();
+        auto offset = value - mBtnGrp[mPreIdx]->pos().x();
+        auto ratio = OwnUtil::triangleFunc(length == 0 ? 0.f : offset / length);
+        auto base = qAbs(length / mBtnSize.width());
 
-    if(length < 0)
-    {
+        if(length < 0)
+        {
+            return QRectF(value,
+                          mBtnSize.height() - mLineWeight,
+                          (1 + base * ratio) * mBtnSize.width(),
+                          mLineWeight);
+        }
+        else if(length > 0)
+        {
+            return QRectF(value + mBtnSize.width(),
+                          mBtnSize.height() - mLineWeight,
+                          -(1 + base * ratio) * mBtnSize.width(),
+                          mLineWeight);
+        }
         return QRectF(value,
-                      this->height() - mLineHeight,
-                      (1 + base * ratio) * mBtnSize.width(),
-                      mLineHeight);
+                      mBtnSize.height() - mLineWeight,
+                      mBtnSize.width(),
+                      mLineWeight);
     }
-    else if(length > 0)
+    else /* 竖直情况 */
     {
-        return QRectF(value + mBtnSize.width(),
-                      this->height() - mLineHeight,
-                      -(1 + base * ratio) * mBtnSize.width(),
-                      mLineHeight);
+        auto length = mBtnGrp[mCurIdx]->pos().y() - mBtnGrp[mPreIdx]->pos().y();
+        auto offset = value - mBtnGrp[mPreIdx]->pos().y();
+        auto ratio = OwnUtil::triangleFunc(length == 0 ? 0.f : offset / length);
+        auto base = qAbs(length / mBtnSize.height());
+
+        if(length < 0)
+        {
+            return QRectF(mBtnSize.width() - mLineWeight,
+                          value,
+                          mLineWeight,
+                          (1 + base * ratio) * mBtnSize.height());
+        }
+        else if(length > 0)
+        {
+            return QRectF(mBtnSize.width() - mLineWeight,
+                          value + mBtnSize.height(),
+                          mLineWeight,
+                          -(1 + base * ratio) * mBtnSize.height());
+        }
+        return QRectF(mBtnSize.width() - mLineWeight,
+                      value,
+                      mLineWeight,
+                      mBtnSize.height());
     }
-    return QRectF(value,
-                  this->height() - mLineHeight,
-                  mBtnSize.width(),
-                  mLineHeight);
 }
 
 void OwnButtonGroup::paintEvent(QPaintEvent *event)
@@ -78,8 +112,8 @@ void OwnButtonGroup::onButtonClicked(int index)
     mPreIdx = mCurIdx;
     mCurIdx = index;
     // top
-    mpAnime->setStartValue(mBtnGrp[mPreIdx]->pos().x());
-    mpAnime->setEndValue(mBtnGrp[mCurIdx]->pos().x());
+    mpAnime->setStartValue(mType == BTN_GRP_LAYOUT::HORIZONTAL? mBtnGrp[mPreIdx]->pos().x() : mBtnGrp[mPreIdx]->pos().y());
+    mpAnime->setEndValue(mType == BTN_GRP_LAYOUT::HORIZONTAL ? mBtnGrp[mCurIdx]->pos().x() : mBtnGrp[mCurIdx]->pos().y());
     mpAnime->setEasingCurve(QEasingCurve::InCubic);
     mpAnime->start();
 }
@@ -92,15 +126,22 @@ void OwnButtonGroup::initButtonConnect()
     }
 }
 
-void OwnButtonGroup::setNormalButtonSize(QSize btnSize)
+void OwnButtonGroup::setNormalButtonSize(QSize btnSize) /* 初始化时调用 */
 {
     mBtnSize = btnSize;
+    if(mType == BTN_GRP_LAYOUT::VERTICAL) {
+        this->setFixedWidth(btnSize.width()); /* 不进行限制会自适应父级的宽度 */
+    }
+    else {
+        this->setFixedHeight(btnSize.height());
+    }
 }
 
 void OwnTopButtonGroup::checkTrayed()
 {
     auto pConfig = OwnConfig::getInstance();
-    if(pConfig->getTrayed())
+    auto& data = pConfig->getSettingData();
+    if(data.trayed)
     {
         pConfig->hideWindowToTray();
     }
@@ -110,19 +151,30 @@ void OwnTopButtonGroup::checkTrayed()
         reply = QMessageBox::question(mpParent, "Trayed", "Need to minmize to tray or just quit?", QMessageBox::Yes | QMessageBox::No);
         if(reply == QMessageBox::Yes)
         {
-            pConfig->setTrayed(true);
+            data.trayed = true;
             pConfig->hideWindowToTray();
 
         }
         else
         {
-            pConfig->setTrayed(false);
+            data.trayed = false;
             QApplication::quit();
             return; // 不是立即退出
         }
     }
 
     emit closeWindowToTray(true);
+}
+
+void OwnButton::setButtonStyle(int font, QRgb normal, QRgb hover, QRgb pressed, QString family)
+{
+    auto style = QString("QPushButton{background-color:%3;border:none;font-size:%1;font-family:'%2';}"
+                         "QPushButton:hover{background-color:%4;}"
+                         "QPushButton:pressed{background-color:%5;}")
+            .arg(font).arg(family).arg(OwnUtil::QRgbaToQString(normal))
+            .arg(OwnUtil::QRgbaToQString(hover)).arg(OwnUtil::QRgbaToQString(pressed));
+    this->setStyleSheet(style);
+    connect(this, &QPushButton::clicked, this, &OwnButton::ownButtonClicked);
 }
 
 }

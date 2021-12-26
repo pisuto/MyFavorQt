@@ -23,6 +23,7 @@ public:
 
     static QImage getImgWithOverlay(const QImage& base, const QImage& overlay);
 
+    /* category从1开始 */
     static int getPages(int category);
 
     static QFrame *createNewPage(int start, int category,
@@ -36,6 +37,8 @@ public:
     static void updatePages(QStackedWidget *pWidget, odbitem& item, int category, int id, SQL_ITEM_OPER oper);
 
     static QString strAutoFeed(const QString& text, const QFont& font, int row = 2, int px = 40);
+
+    static QString QRgbaToQString(QRgb color) { return QString("rgba(%1, %2, %3, %4)").arg(qRed(color)).arg(qGreen(color)).arg(qBlue(color)).arg(qAlpha(color)); }
 };
 
 }

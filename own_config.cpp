@@ -108,30 +108,22 @@ void OwnConfig::init()
         qDebug() << "[ERROR] CREATE MYDOCUMENT FILE FAILED.";
     }
 
-    // 设置标题font
-    QFont font("Microsoft YaHei", 10, QFont::Bold);
-    QPalette pale;
-    pale.setColor(QPalette::WindowText, Qt::white);
+    // 初始化全局数据
+    helper.read(data);
 
     // 初始化页面配置
-    auto categoryCnt = static_cast<int>(SQL_ITEM_CATEGORY::COUNT);
+    auto categoryCnt = static_cast<int>(data.category.categories.size());
     mPageCount = QVector<int>(categoryCnt, 0);
-    for(int i = 1; i < categoryCnt; ++ i)
+    for(int i = 1; i <= categoryCnt; ++ i)
     {
         updateCategoryCount(i);
     }
-
-    setTrayed(false);
-
-    // 初始化全局数据
-    helper.read(data);
 }
 
 void OwnConfig::updateCategoryCount(int category)
 {
-    auto index = static_cast<int>(category) - 1;
     auto cnt = OwnDatabase::getInstance()->categoryCount(category);
-    mPageCount[index] = cnt;
+    mPageCount[category - 1] = cnt;
 }
 
 void OwnConfig::hideWindowToTray()

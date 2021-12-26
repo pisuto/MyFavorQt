@@ -27,10 +27,16 @@ void OwnFadeStackedView::switchWidget(int index)
     if(index == mNextIdx)
         return;
     startAnimation(index);
-    if(mpPageBar)
+    if(mpPageBar) /* 最后一个为配置页面，无须设置页码组件 */
     {
-        mpPageBar->setMaxPage(OwnUtil::getPages(index + 1));
-        mpPageBar->setCurrentPage(0, true);
+        if(index != this->count() - 1) {
+            showPageBar();
+            mpPageBar->setMaxPage(OwnUtil::getPages(index + 1));
+            mpPageBar->setCurrentPage(0, true);
+        }
+        else {
+            hidePageBar();
+        }
     }
 }
 
@@ -43,7 +49,7 @@ void OwnFadeStackedView::startAnimation(int index)
     this->currentWidget()->hide();
     this->setCurrentIndex(mNextIdx);
     // 初始化子页面
-    if(mpPageBar)
+    if(mpPageBar && index != this->count() - 1) /* 最后一个为配置页面，无须设置页码组件 */
     {
         auto pView = qobject_cast<OwnSlideStackedView*>(this->currentWidget());
         pView->setCurrentIndex(0);    // index

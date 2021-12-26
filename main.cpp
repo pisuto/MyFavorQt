@@ -36,17 +36,25 @@ int main(int argc, char *argv[])
                          {"Movie", ":/images/svgtopng/movie.png"}, {"Music", ":/images/svgtopng/music.png"},
                          {"Photo", ":/images/svgtopng/photos.png"}} };
     config.screen = { 0, {3, 3}, {{{2560, 1440},{185, 300}}, {{1920, 1080},{138, 225}}} };
-    config.btngrp = { -1, 40, {{-1, {40, 30}, {30, 30}}, {0, {80, 30}, {20, 20}}, {1, {80, 30}, {20, 20}},
-                    {2, {80, 30}, {20, 20}}, {3, {80, 30}, {20, 20}}, {4, {80, 30}, {20, 20}},
-                    {5, {40, 30}, {20, 20}}} };
+    config.btngrp = { -1, 40, {{-1, {40, 30}, {30, 30}, {"undo", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {0, {80, 30}, {20, 20}, {"btn0", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {1, {80, 30}, {20, 20}, {"btn1", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {2, {80, 30}, {20, 20}, {"btn2", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {3, {80, 30}, {20, 20}, {"btn3", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {4, {80, 30}, {20, 20}, {"btn4", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}},
+                               {5, {40, 30}, {20, 20}, {"setting", 15, 50 /* 没用 */, "Microsoft YaHei", ""}, {}}} };
     config.element = { {{"title", 15, 75, "Microsoft YaHei", ""}, {"user", 10, 50, "Microsoft YaHei", ""},
                         {"desc", 10, 50, "Microsoft YaHei", ""}} };
     config.pagebar = { {{"text", 9, 0, "Microsoft YaHei", ""}} };
+    config.setting.btngrp = { 0, 0, {  {0, {100, 40}, {}, {"System", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
+                                        {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}},
+                                       {1, {100, 40}, {}, {"Unit", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
+                                        {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}},
+                                       {2, {100, 40}, {}, {"About", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
+                                        {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}}, }};
 
     helper.write(config);
 #endif
 
-    // 结束时保存配置
-    spConfig->save();
     return a.exec();
 }

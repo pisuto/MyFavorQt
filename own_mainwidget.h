@@ -15,6 +15,7 @@
 #include "own_button.h"
 #include "own_fadestackedview.h"
 #include "own_pagebar.h"
+#include "own_settingview.h"
 
 class QFrame;
 class QWidget;
@@ -27,13 +28,13 @@ class OwnMainWidget : public QFrame
 public:
     Q_OBJECT
 public:
-    explicit OwnMainWidget(QWidget *parent = nullptr);
+    explicit OwnMainWidget(QWidget *parent = Q_NULLPTR);
     ~OwnMainWidget() override;
 
     QSize getTopRightDownPos() const { return QSize(mpTopBtns->geometry().x() + mpTopBtns->width(), mpTopBtns->geometry().y() + mpTopBtns->height()); }
 
 private:
-    QVBoxLayout* pMainLayout;
+    QVBoxLayout* mpMainLayout;
     QHBoxLayout* pTopLayout;
     QGridLayout* pListLayout;
     QListWidget* pImgList;
@@ -47,6 +48,7 @@ private:
     mf::OwnPageBar* mpPageBar;
     mf::OwnTopButtonGroup* mpTopBtns;
     mf::OwnItemUploadView* mpItemViewer;
+    mf::OwnSettingView* mpSettingView;
 };
 
 }

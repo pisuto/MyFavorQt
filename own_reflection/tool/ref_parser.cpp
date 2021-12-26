@@ -216,8 +216,8 @@ namespace ref {
 			if (lae != std::string::npos) {
 				if (line[las + 1] != '/') {
 					node.text.name = line.substr(las + 1, lae - las - 1);
-					auto ras /* right arrow start */ = line.find_first_of("</", lae);
-					if (ras != std::string::npos) {
+                    auto ras /* right arrow start */ = line.find_first_of("<", lae);
+                    if (ras != std::string::npos && line[ras + 1] == '/') {
 						auto rae /* right arrow end */ = line.find_first_of('>', ras);
 						if (rae != std::string::npos) {
 							/* 读取到<>...</>节点时将其压入上一个父节点 */

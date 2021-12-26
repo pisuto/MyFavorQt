@@ -21,6 +21,8 @@ public:
     void switchWidget(int index);
     void setDuration(quint16 dura) { mDuration = dura; }
     OwnPageBar* getPageBar() { return mpPageBar; }
+    void hidePageBar() { if(mpPageBar) mpPageBar->hide(); }
+    void showPageBar() { if(mpPageBar) mpPageBar->show(); }
 
 private:
     void startAnimation(int index);
@@ -32,7 +34,6 @@ private:
     quint8 mWidgetCnt;
     quint8 mNextIdx;
     quint8 mCurrIdx;
-    QColor mStartColor;
     bool mbIsAnimation;
 
     // 切换页面

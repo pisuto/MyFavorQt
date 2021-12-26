@@ -140,13 +140,11 @@ void OwnPageBar::initialize()
 {
     mpText->setText(QString("page"));
     auto config = OwnConfig::getInstance();
-#ifdef AUTO_SETTING_LOAD
+
     const auto& component = config->getSettingData().pagebar;
     const auto& font = component.fonts[0];
-    mpText->setFont(QFont(font.name.c_str(), font.size, font.weight));
-#else
-    config->setFont(mpText, 9, QFont::Thin);
-#endif
+    mpText->setFont(QFont(font.name.c_str(), font.extent, font.weight));
+
     mpLeftSepLabel->setText("..");
     mpRightSepLabel->setText("..");
     mpPrePageLabel->setText("<<");
