@@ -1,5 +1,6 @@
 #include "own_settingview.h"
 #include "own_config.h"
+#include "own_setting_view/own_aboutview.h"
 
 #include <QSplitter>
 
@@ -23,13 +24,13 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
      *          其余字体大小设置
      *          图片保存路径，点击输入
      * about:
-     *          作者、GitHub、Gitee、CSDN
+     *          作者、Github、Gitee、CSDN
      *
      */
     const auto& setting = OwnConfig::getInstance()->getSettingData();
     const auto last = setting.setting.btngrp.btns.size() - 1;
-    const auto& defSize = setting.setting.btngrp.btns[0].size;
-    mpBtnGrp->setNormalButtonSize(QSize(static_cast<int>(defSize.width), static_cast<int>(defSize.height)));
+    const auto& defBtn = setting.setting.btngrp.btns[0];
+    mpBtnGrp->setNormalButtonSize(QSize(static_cast<int>(defBtn.size.width), static_cast<int>(defBtn.size.height)));
     for(size_t index = 0; index <= last; ++index)
     {
         const auto& btnData = setting.setting.btngrp.btns[index];
@@ -46,13 +47,15 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
                 this, [&](){this->mpStackedView->switchWidget(btnData.id);});
         mpBtnGrp->addButton(btn);
     }
-    mpBtnGrp->setFixedWidth(static_cast<int>(defSize.width * 1.15)); /* 使得分割线远离一些 */
+    mpBtnGrp->setFixedWidth(static_cast<int>(defBtn.size.width * 1.15)); /* 使得分割线远离一些 */
     mpBtnGrp->addStretch(1);
     mpBtnGrp->initButtonConnect();
 
     mpStackedView->addWidget(new QFrame);
     mpStackedView->addWidget(new QFrame);
-    mpStackedView->addWidget(new QFrame);
+    mpStackedView->addWidget(new OwnAboutView(defBtn.size.height, QFont(defBtn.font.name.c_str(),
+                                                    defBtn.font.extent,
+                                                    defBtn.font.weight), this));
 
 
     auto pSplitter = new QSplitter(Qt::Horizontal);
@@ -62,7 +65,7 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
     pSplitter->addWidget(mpStackedView);
     pSplitter->handle(1)->setCursor(Qt::ArrowCursor); /* 设置其永远为鼠标格式不再移动 */
 
-    mpMainLayout->setContentsMargins(100, 20, 100, 10);
+    mpMainLayout->setContentsMargins(100, 20, 50, 10);
     mpMainLayout->addWidget(pSplitter);
     this->setLayout(mpMainLayout);
 }
