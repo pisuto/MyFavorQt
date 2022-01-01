@@ -15,5 +15,8 @@
         <file>images/svgtopng/deleted.png</file>
         <file>images/icon/ice.png</file>
         <file>images/icon/tray.png</file>
+        <file>images/windows/right-arrow.png</file>
+        <file>images/windows/down-arrow.png</file>
+        <file>images/windows/cancel-cross.png</file>
     </qresource>
 </RCC>

@@ -28,7 +28,8 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
      *
      */
     const auto& setting = OwnConfig::getInstance()->getSettingData();
-    const auto last = setting.setting.btngrp.btns.size() - 1;
+    const int last = static_cast<int>(setting.setting.btngrp.btns.size()) - 1;
+    if(last < 0) return;
     const auto& defBtn = setting.setting.btngrp.btns[0];
     mpBtnGrp->setNormalButtonSize(QSize(static_cast<int>(defBtn.size.width), static_cast<int>(defBtn.size.height)));
     for(size_t index = 0; index <= last; ++index)
@@ -51,9 +52,13 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
     mpBtnGrp->addStretch(1);
     mpBtnGrp->initButtonConnect();
 
+    mpStackedView->addWidget(new OwnSystemView(static_cast<int>(defBtn.size.height) / 4,
+                                              QFont(defBtn.font.name.c_str(),
+                                                    defBtn.font.extent,
+                                                    defBtn.font.weight), this));
     mpStackedView->addWidget(new QFrame);
-    mpStackedView->addWidget(new QFrame);
-    mpStackedView->addWidget(new OwnAboutView(defBtn.size.height, QFont(defBtn.font.name.c_str(),
+    mpStackedView->addWidget(new OwnAboutView(static_cast<int>(defBtn.size.height),
+                                              QFont(defBtn.font.name.c_str(),
                                                     defBtn.font.extent,
                                                     defBtn.font.weight), this));
 

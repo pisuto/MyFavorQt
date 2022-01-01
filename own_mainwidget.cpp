@@ -50,7 +50,7 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
 
     const auto& setting = pConfig->getSettingData();
     const auto& categories = setting.category.categories;
-    const auto last = setting.btngrp.btns.size() - 1;
+    const auto last = static_cast<int>(setting.btngrp.btns.size()) - 1;
     /* 最起码有一个可用按钮，否则直接退出 */
     if(last <= 2)
     {

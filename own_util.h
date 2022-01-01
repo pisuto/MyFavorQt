@@ -17,9 +17,11 @@ class OwnUtil {
 public:
     static float triangleFunc(float x);
 
+    static bool isFileExist(const QString& fileName);
     static void createFile(const QString& fileName);
-
     static bool deleteFile(const QString& path);
+    static bool copyFile(const QString& source, const QString& target);
+    static bool checkXmlExists();
 
     static QImage getImgWithOverlay(const QImage& base, const QImage& overlay);
 

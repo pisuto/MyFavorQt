@@ -13,6 +13,9 @@
 
 #include "own_reflection/own_reflect_item.h"
 
+#define MF_DEFAULT_XML  "default.xml"
+#define MF_CUSTOM_XML   "setting.xml"
+
 namespace mf {
 
 // 对元素的操作类型
@@ -97,13 +100,14 @@ class OwnConfig : public OwnSingleton<OwnConfig>
 {
 public:
     OwnConfig() : mpMainWindow(Q_NULLPTR), mpItemViewer(Q_NULLPTR),
-        helper(new ref::xml_parser("setting.xml")) {}
+        helper(new ref::xml_parser(MF_CUSTOM_XML)) {}
     ~OwnConfig() {}
 
     void init();
     void save() { helper.write(data); }
 
     QSize getDisplayImageSize() const {
+        if(data.screen.index >= data.screen.resogrp.size()) return QSize(0, 0);
         const auto& image = data.screen.resogrp[data.screen.index].image;
         return QSize(static_cast<int>(image.width), static_cast<int>(image.height));
     }

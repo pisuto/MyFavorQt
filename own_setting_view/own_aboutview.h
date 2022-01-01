@@ -4,6 +4,8 @@
 #include <QFrame>
 #include <QVBoxLayout>
 
+#include "own_addlabelview.h"
+
 class QSplitter;
 
 namespace mf {
@@ -30,6 +32,23 @@ public:
 private:
     QVBoxLayout* mpMainLayout;
 
+};
+
+
+class OwnSystemView : public QFrame {
+
+public:
+    explicit OwnSystemView(int height, QFont font, QWidget* parent = Q_NULLPTR);
+    ~OwnSystemView() {}
+
+    QFrame* createDropCombox(const QFont& font, const QString& prefix, float scale = 0.5f);
+    QFrame* createMultiLabels();
+signals:
+    void dropComboxChanged(QString);
+
+private:
+    OwnAddLabelView* mpDialog;
+    QVBoxLayout* mpMainLayout;
 };
 
 

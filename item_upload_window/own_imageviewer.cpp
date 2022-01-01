@@ -14,7 +14,8 @@ OwnImageViewer::OwnImageViewer(QLabel* display, QWidget* parent) : QWidget (pare
     mpDisplay(display)
 {
     mpPixmap->load(":/images/svgtopng/default.png");
-    auto cropSize = OwnConfig::getInstance()->getDisplayImageSize();
+    auto pConfig = OwnConfig::getInstance();
+    auto cropSize = pConfig->getDisplayImageSize();
     auto winSize = cropSize * 1.5;
     this->setFixedSize(winSize);
     mpCropArea = new OwnScreen(cropSize, winSize);

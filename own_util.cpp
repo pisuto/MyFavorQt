@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QPainter>
 #include <QDebug>
+#include <QMessageBox>
 
 namespace mf {
 
@@ -22,14 +23,22 @@ float OwnUtil::triangleFunc(float x)
     return 0.f;
 }
 
-void OwnUtil::createFile(const QString &fileName)
+bool OwnUtil::isFileExist(const QString& fileName)
 {
     QFileInfo info(fileName);
-    if(info.isFile())
-       return;
-    QFile file(fileName);
-    file.open(QIODevice::WriteOnly);
-    file.close();
+    if(info.exists() && info.isFile())
+       return true;
+    return false;
+}
+
+void OwnUtil::createFile(const QString &fileName)
+{
+    if(!isFileExist(fileName))
+    {
+        QFile file(fileName);
+        file.open(QIODevice::WriteOnly);
+        file.close();
+    }
 }
 
 bool OwnUtil::deleteFile(const QString &path)
@@ -40,6 +49,39 @@ bool OwnUtil::deleteFile(const QString &path)
     if(info.isFile())
         return QFile::remove(path);
     return false;
+}
+
+bool OwnUtil::copyFile(const QString& source, const QString& target)
+{
+    if(source == target)
+        return true;
+    if(isFileExist(target) || !isFileExist(source))
+        return false;
+    if(!QFile::copy(source, target))
+        return false;
+    return true;
+}
+
+bool OwnUtil::checkXmlExists()
+{
+    if(!mf::OwnUtil::isFileExist(MF_DEFAULT_XML))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please check if default.xml exist.");
+        msgBox.exec();
+        return false;
+    }
+    else if(!mf::OwnUtil::isFileExist(MF_CUSTOM_XML))
+    {
+        if(!mf::OwnUtil::copyFile(MF_DEFAULT_XML, MF_CUSTOM_XML))
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Copying default.xml failed.");
+            msgBox.exec();
+            return false;
+        }
+    }
+    return true;
 }
 
 QImage OwnUtil::getImgWithOverlay(const QImage &base, const QImage &overlay)

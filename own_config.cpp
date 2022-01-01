@@ -97,7 +97,6 @@ const QString SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL =
 
 /*--------------------------------------------------------------------------*/
 
-
 void OwnConfig::init()
 {
     // 在我的文档下面创建文件夹放置图片

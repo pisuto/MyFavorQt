@@ -6,6 +6,9 @@
 #include <QPainter>
 #include <QDebug>
 #include <QtMath>
+#include <QAction>
+#include <QMenu>
+#include <QColorDialog>
 
 namespace mf {
 
@@ -176,5 +179,259 @@ void OwnButton::setButtonStyle(int font, QRgb normal, QRgb hover, QRgb pressed, 
     this->setStyleSheet(style);
     connect(this, &QPushButton::clicked, this, &OwnButton::ownButtonClicked);
 }
+
+
+OwnToggleButton::OwnToggleButton(int trackRadius, int thumbRadius, QWidget* parent)
+    : QAbstractButton(parent)
+{
+    setCheckable(true);
+    setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
+    mTrackRadius = trackRadius;
+    mThumbRadius = thumbRadius;
+    mAnimation = new QPropertyAnimation(this);
+    mAnimation->setTargetObject(this);
+
+    mMargin = 0 > (mThumbRadius - mTrackRadius) ? 0 : (mThumbRadius - mTrackRadius);
+    mBaseOffset = mThumbRadius > mTrackRadius ? mThumbRadius : mTrackRadius;
+    mEndOffset.insert(true, 4 * mTrackRadius + 2 * mMargin - mBaseOffset); // width - offset
+    mEndOffset.insert(false, mBaseOffset);
+    mOffset = mBaseOffset;
+    QPalette palette = this->palette();
+
+    if (mThumbRadius > mTrackRadius)
+    {
+        mTrackColor.insert(true, palette.highlight());
+        mTrackColor.insert(false, palette.dark());
+        mThumbColor.insert(true, palette.highlight());
+        mThumbColor.insert(false, palette.light());
+        mOpacity = 0.5f;
+    }
+    else
+    {
+        mTrackColor.insert(true, palette.highlight());
+        mTrackColor.insert(false, palette.dark());
+        mThumbColor.insert(true, palette.highlightedText());
+        mThumbColor.insert(false, palette.light());
+        mOpacity = 1.0;
+    }
+}
+
+QSize OwnToggleButton::sizeHint() const
+{
+    int w = 4 * mTrackRadius + 2 * mMargin;
+    int h = 2 * mTrackRadius + 2 * mMargin;
+
+    return QSize(w, h);
+}
+
+void OwnToggleButton::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    QPainter::RenderHints m_paintFlags = QPainter::RenderHints(QPainter::Antialiasing |
+        QPainter::TextAntialiasing);
+    p.setRenderHints(m_paintFlags, true);
+    p.setPen(Qt::NoPen);
+    bool check = isChecked();
+    qreal trackOpacity = static_cast<qreal>(mOpacity);
+    qreal thumbOpacity = 1.0;
+    QBrush trackBrush;
+    QBrush thumbBrush;
+
+    if (this->isEnabled())
+    {
+
+        trackBrush = mTrackColor[check];
+        thumbBrush = mThumbColor[check];
+    }
+    else
+    {
+        trackOpacity *= 0.8;
+        trackBrush = this->palette().shadow();
+        thumbBrush = this->palette().mid();
+    }
+
+    p.setBrush(trackBrush);
+    p.setOpacity(trackOpacity);
+    p.drawRoundedRect(mMargin, mMargin, width() - 2 * mMargin, height() - 2 * mMargin, mTrackRadius, mTrackRadius);
+
+    p.setBrush(thumbBrush);
+    p.setOpacity(thumbOpacity);
+    p.drawEllipse(mOffset - mThumbRadius, mBaseOffset - mThumbRadius, 2 * mThumbRadius, 2 * mThumbRadius);
+}
+
+void OwnToggleButton::resizeEvent(QResizeEvent* e)
+{
+    QAbstractButton::resizeEvent(e);
+    mOffset = static_cast<int>(mEndOffset.value(isChecked()));
+}
+
+void OwnToggleButton::mouseReleaseEvent(QMouseEvent  *e)
+{
+    QAbstractButton::mouseReleaseEvent(e);
+    if (e->button() == Qt::LeftButton)
+    {
+        emit toggle(isChecked()); /* 发送消息 */
+        mAnimation->setDuration(120);
+        mAnimation->setPropertyName("mOffset");
+        mAnimation->setStartValue(mOffset);
+        mAnimation->setEndValue(mEndOffset[isChecked()]);
+        mAnimation->start();
+    }
+}
+
+void OwnToggleButton::enterEvent(QEvent * event)
+{
+    setCursor(Qt::PointingHandCursor);
+    QAbstractButton::enterEvent(event);
+}
+
+void OwnToggleButton::setChecked(bool checked)
+{
+    QAbstractButton::setChecked(checked);
+    mOffset = static_cast<int>(mEndOffset.value(checked));
+}
+
+int OwnToggleButton::offset()
+{
+    return mOffset;
+}
+
+void OwnToggleButton::setOffset(int value)
+{
+    mOffset = value;
+    update();
+}
+
+
+const QColor colors[6][8] =
+{
+    {QColor(0, 0, 0, 255), QColor(170, 0, 0, 255), QColor(0, 85, 0, 255), QColor(170, 85, 0, 255),
+    QColor(0, 170, 0, 255), QColor(170, 170, 0, 255), QColor(0, 255, 0, 255), QColor(170, 250, 0, 255)},
+
+    {QColor(0, 0, 127, 255), QColor(170, 0, 127, 255), QColor(0, 85, 127, 255), QColor(170, 85, 127, 255),
+    QColor(0, 170, 127, 255), QColor(170, 170, 127, 255), QColor(0, 255, 127, 255), QColor(170, 255, 127, 255)},
+
+    {QColor(0, 0, 255, 255), QColor(170, 0, 255, 255), QColor(0, 85, 255, 255), QColor(170, 85, 255, 255),
+    QColor(0, 170, 255, 255), QColor(170, 170, 255, 255), QColor(0, 255, 255, 255), QColor(170, 255, 255, 255)},
+
+    {QColor(85, 0, 0, 255), QColor(255, 0, 0, 255), QColor(85, 85, 0, 255), QColor(255, 85, 0, 255),
+    QColor(85, 170, 0, 255), QColor(255, 170, 0, 255), QColor(85, 255, 0, 255), QColor(255, 255, 0, 255)},
+
+    {QColor(85, 0, 127, 255), QColor(255, 0, 127, 255), QColor(85, 85, 127, 255), QColor(255, 85, 127, 255),
+    QColor(85, 170, 127, 255), QColor(255, 170, 127, 255), QColor(85, 255, 127, 255), QColor(255, 255, 127, 255)},
+
+    {QColor(85, 0, 255, 255), QColor(255, 0, 255, 255), QColor(85, 85, 255, 255), QColor(255, 85, 255, 255),
+    QColor(85, 170, 255, 255), QColor(255, 170, 255, 255), QColor(85, 255, 255, 255), QColor(255, 255, 255, 255)}
+};
+
+OwnColorCombox::OwnColorCombox(QWidget *parent)
+    : QPushButton(parent), mIconSize(56, 18)
+{
+    this->setMenu(createColorMenu(SLOT(onColorChanged()), SLOT(onShowColorBoard())));
+    this->setAutoFillBackground(true);
+    this->setButtonIcon(QColor(255, 255, 255));
+
+    auto btnStyle = QString("QPushButton::menu-indicator{image:url(:/images/windows/down-arrow.png);"
+                            "width:18px;height:18px;subcontrol-position:right center;position: absolute;right:2px;}"
+                            "QPushButton{font-family:'Microsoft YaHei';font-size:12px;color:rgb(150,150,150);}"
+                            "QPushButton{background-color:rgb(245, 245, 245);border:2px solid #dcdfe6;"
+                            "border-radius:5px;padding-right:18%;}");
+    this->setStyleSheet(btnStyle);
+    this->setFixedSize(QSize(90, 30));
+    this->setIconSize(mIconSize);
+
+    auto menuStyle = QString("QMenu{font-size:12px;color:rgb(150,150,150);background-color:white;border-radius:5px;"
+                             "border:2px solid #dcdfe6;;padding:5px 4px 5px 4px;margin:1px;}");
+    this->menu()->setStyleSheet(menuStyle);
+    this->menu()->setAttribute(Qt::WA_TranslucentBackground); //Menu背景透明
+    this->menu()->setWindowFlags(this->menu()->windowFlags()  | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+}
+
+void OwnColorCombox::setButtonIcon(QColor color)
+{
+    this->setIcon(createColorIcon(color));
+
+}
+
+QMenu *OwnColorCombox::createColorMenu(const char *slot, const char *slotColorBoard)
+{
+    // 选择其他颜色
+    QToolButton *pBtnOtherColor = new QToolButton;
+    pBtnOtherColor->setText(tr("other color"));
+    pBtnOtherColor->setFixedSize(QSize(142, 20));
+    pBtnOtherColor->setAutoRaise(true);
+    pBtnOtherColor->setToolTip("other color");
+    connect(pBtnOtherColor, SIGNAL(clicked()), this, slotColorBoard);
+
+    // 基本色
+    QGridLayout *pGridLayout = new QGridLayout;
+    pGridLayout->setAlignment(Qt::AlignCenter);
+    pGridLayout->setContentsMargins(0, 0, 0, 0);
+    pGridLayout->setSpacing(2);
+
+    for (int iRow = 0; iRow < 6; iRow++)
+    {
+        for (int iCol = 0; iCol < 8; iCol++)
+        {
+            QAction *action = new QAction(this);
+            action->setData(colors[iRow][iCol]);
+            action->setIcon(createColorIcon(colors[iRow][iCol]));
+            connect(action, SIGNAL(triggered()), this, slot);
+
+            QToolButton *pBtnColor = new QToolButton;
+            pBtnColor->setFixedSize(QSize(16, 16));
+            pBtnColor->setAutoRaise(true);
+            pBtnColor->setDefaultAction(action);
+            pBtnColor->setToolTip("white");
+
+            pGridLayout->addWidget(pBtnColor, iRow, iCol);
+        }
+    }
+
+    QWidget *widget = new QWidget;
+    widget->setLayout(pGridLayout);
+
+    QVBoxLayout *pVLayout = new QVBoxLayout;
+    // pVLayout->addWidget(pBtnTransparent);
+    pVLayout->addWidget(widget);
+    pVLayout->addWidget(pBtnOtherColor);
+
+    QMenu *colorMenu = new QMenu(this);
+    colorMenu->setLayout(pVLayout);
+
+    return colorMenu;
+}
+
+QIcon OwnColorCombox::createColorIcon(QColor color)
+{
+    QPixmap pixmap(mIconSize.width(), mIconSize.height());
+    QPainter painter(&pixmap);
+    painter.setPen(Qt::NoPen);
+    painter.fillRect(QRect(0, 0, mIconSize.width(), mIconSize.height()), color);
+
+    return QIcon(pixmap);
+}
+
+void OwnColorCombox::onColorChanged()
+{
+    QAction *pFillColorAction = new QAction(this);
+    pFillColorAction = qobject_cast<QAction *>(sender());
+    QColor color = qvariant_cast<QColor>(pFillColorAction->data());
+
+    this->menu()->close();
+    setButtonIcon(color);
+    emit colorChanged(color);
+}
+
+void OwnColorCombox::onShowColorBoard()
+{
+    this->menu()->close();
+    QColor color = QColorDialog::getColor(Qt::black, this);
+    if (!color.isValid())
+        return;
+    setButtonIcon(color);
+    emit colorChanged(color);
+}
+
 
 }

@@ -9,6 +9,8 @@
 #include <QMouseEvent>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <QToolButton>
+#include <QComboBox>
 
 class QPropertyAnimation;
 
@@ -31,7 +33,7 @@ public:
 
     int geIndex() { return mIndex; }
     void setButtonStyle(int font = 15, QRgb normal = qRgba(255, 255, 255, 40),
-                    QRgb hover = qRgba(211, 211, 211, 40), QRgb pressed = qRgba(105, 105, 105, 80), QString family = "Microsoft YaHei UI");
+                        QRgb hover = qRgba(211, 211, 211, 40), QRgb pressed = qRgba(105, 105, 105, 80), QString family = "Microsoft YaHei UI");
 
 signals:
     void sendIndex(int index);
@@ -90,12 +92,12 @@ public:
         mpLayout(new QHBoxLayout())
     {
         auto closeStyle = QString("QPushButton{border-image: url(:/images/windows/close.png);}"
-                             "QPushButton:hover{border-image: url(:/images/windows/close-pressed.png);}"
-                             "QPushButton:pressed{border-image: url(:/images/windows/close-pressed.png);}");
+                                  "QPushButton:hover{border-image: url(:/images/windows/close-pressed.png);}"
+                                  "QPushButton:pressed{border-image: url(:/images/windows/close-pressed.png);}");
 
         auto minStyle = QString("QPushButton{border-image: url(:/images/windows/min.png);border:none;}"
-                             "QPushButton:hover{border-image: url(:/images/windows/min-pressed.png);}"
-                             "QPushButton:pressed{border-image: url(:/images/windows/min-pressed.png);}");
+                                "QPushButton:hover{border-image: url(:/images/windows/min-pressed.png);}"
+                                "QPushButton:pressed{border-image: url(:/images/windows/min-pressed.png);}");
         mpCloseBtn->setStyleSheet(closeStyle);
         mpMinBtn->setStyleSheet(minStyle);
 
@@ -125,6 +127,69 @@ private:
     QPushButton* mpMinBtn;
     QHBoxLayout* mpLayout;
 };
+
+class OwnToggleButton : public QAbstractButton {
+    Q_OBJECT
+    Q_PROPERTY(int mOffset READ offset WRITE setOffset)
+public:
+    explicit OwnToggleButton(int trackRadius, int thumbRadius, QWidget* parent = nullptr);
+    ~OwnToggleButton() override {}
+
+    QSize sizeHint() const override;
+
+signals:
+    void toggle(bool);
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    void resizeEvent(QResizeEvent*) override;
+    void mouseReleaseEvent(QMouseEvent  *) override;
+    void enterEvent(QEvent *event) override;
+    void setChecked(bool checked);
+
+    int offset();
+    void setOffset(int value);
+
+private:
+    int mOffset;
+    int mBaseOffset;
+    int mMargin;
+    int mTrackRadius;
+    int mThumbRadius;
+    float mOpacity;
+    QPropertyAnimation* mAnimation;
+
+    QHash<bool, qreal> mEndOffset;
+    QHash<bool, QBrush> mTrackColor;
+    QHash<bool, QBrush> mThumbColor;
+};
+
+class OwnColorCombox : public QPushButton
+{
+    Q_OBJECT
+public:
+    OwnColorCombox(QWidget *parent = Q_NULLPTR);
+    ~OwnColorCombox() {}
+
+    void setButtonIcon(QColor color);
+
+private:
+    QMenu* createColorMenu(const char *slot, const char *slotColorBoard);
+    QIcon createColorIcon(QColor color);
+
+signals:
+    void colorChanged(QColor color);
+
+private slots:
+    void onColorChanged();           // 文本颜色设置
+    void onShowColorBoard();         // 颜色板
+
+private:
+    QSize mIconSize;
+};
+
+
+
 
 }
 

@@ -38,11 +38,13 @@ SOURCES += \
         own_fadestackedview.cpp \
         own_lineedit.cpp \
         own_mainwidget.cpp \
+    own_multilabel.cpp \
         own_pagebar.cpp \
     own_reflection/own_reflect_item.cpp \
     own_reflection/reflection/ref_define.cpp \
     own_reflection/tool/ref_parser.cpp \
     own_setting_view/own_aboutview.cpp \
+    own_setting_view/own_addlabelview.cpp \
     own_settingview.cpp \
         own_slidestackedview.cpp \
         item_upload_window/own_itemuploadview.cpp \
@@ -62,6 +64,7 @@ HEADERS += \
         own_fadestackedview.h \
         own_lineedit.h \
         own_mainwidget.h \
+        own_multilabels.h \
         own_pagebar.h \
         own_reflection/own_reflect_item.h \
         own_reflection/reflection/ref_base.h \
@@ -70,13 +73,15 @@ HEADERS += \
         own_reflection/tool/ref_helper.h \
         own_reflection/tool/ref_parser.h \
         own_setting_view/own_aboutview.h \
+        own_setting_view/own_addlabelview.h \
         own_settingview.h \
         own_slidestackedview.h \
         own_util.h
 
 FORMS += \
         MainWindow.ui \
-        OwnItemUploadView.ui
+        OwnItemUploadView.ui \
+        own_setting_view/OwnAddLabelView.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -86,3 +91,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     images.qrc \
     qss.qrc
+

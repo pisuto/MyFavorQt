@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "own_config.h"
+#include "own_util.h"
 
 #include <QApplication>
 #include <QFile>
@@ -21,6 +22,8 @@ int main(int argc, char *argv[])
         qssFile.close();
     }
     // 初始化配置
+    if(!mf::OwnUtil::checkXmlExists())
+        return EXIT_FAILURE;
     auto spConfig = mf::OwnConfig::getInstance();
     spConfig->init();
 
