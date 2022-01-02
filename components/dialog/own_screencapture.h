@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "own_config.h"
+#include "../global/own_config.h"
 #include "own_imageviewer.h"
 
 class QMenu;

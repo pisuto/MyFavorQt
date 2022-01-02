@@ -1,5 +1,5 @@
 #include "own_screencapture.h"
-#include "own_config.h"
+#include "../global/own_config.h"
 
 #include <QApplication>
 #include <QPainter>

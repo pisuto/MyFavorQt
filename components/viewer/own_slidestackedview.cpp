@@ -1,8 +1,8 @@
 #include "own_slidestackedview.h"
 #include "own_element.h"
-#include "own_database.h"
-#include "own_database_item.h"
-#include "own_util.h"
+#include "../global/own_database.h"
+#include "../global/own_database_item.h"
+#include "../global/own_util.h"
 
 #include <QPropertyAnimation>
 #include <QPainter>

@@ -1,8 +1,8 @@
 #include "own_mainwidget.h"
-#include "own_config.h"
-#include "own_database.h"
-#include "own_database_item.h"
-#include "own_util.h"
+#include "../global/own_config.h"
+#include "../global/own_database.h"
+#include "../global/own_database_item.h"
+#include "../global/own_util.h"
 
 #include <QtMath>
 #include <QMenu>

@@ -1,6 +1,6 @@
 #include "MainWindow.h"
-#include "own_config.h"
-#include "own_util.h"
+#include "components/global/own_config.h"
+#include "components/global/own_util.h"
 
 #include <QApplication>
 #include <QFile>

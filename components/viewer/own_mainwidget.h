@@ -12,9 +12,9 @@
 
 #include "own_element.h"
 #include "own_slidestackedview.h"
-#include "own_button.h"
+#include "../button/own_button.h"
 #include "own_fadestackedview.h"
-#include "own_pagebar.h"
+#include "../pagebar/own_pagebar.h"
 #include "own_settingview.h"
 
 class QFrame;

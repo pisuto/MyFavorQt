@@ -11,7 +11,7 @@
 #include <QDir>
 #include <QDebug>
 
-#include "own_reflection/own_reflect_item.h"
+#include "../reflection/own_reflect_item.h"
 
 #define MF_DEFAULT_XML  "default.xml"
 #define MF_CUSTOM_XML   "setting.xml"

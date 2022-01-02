@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "own_mainwidget.h"
+#include "components/viewer/own_mainwidget.h"
 
 class QFrame;
 

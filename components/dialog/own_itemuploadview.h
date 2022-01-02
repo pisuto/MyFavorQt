@@ -5,8 +5,8 @@
 #include <QDialog>
 #include <QGraphicsEffect>
 
-#include "own_button.h"
-#include "own_fadestackedview.h"
+#include "../button/own_button.h"
+#include "../viewer/own_fadestackedview.h"
 #include "own_itemuploadform.h"
 
 namespace Ui {

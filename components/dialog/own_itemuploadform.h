@@ -5,7 +5,7 @@
 
 #include "own_screencapture.h"
 #include "own_imageviewer.h"
-#include "own_lineedit.h"
+#include "../edit/own_lineedit.h"
 
 class QVBoxLayout;
 class QLineEdit;

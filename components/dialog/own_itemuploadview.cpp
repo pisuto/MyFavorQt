@@ -1,8 +1,8 @@
-#include "item_upload_window/own_itemuploadview.h"
+#include "own_itemuploadview.h"
 #include "ui_OwnItemUploadView.h"
-#include "own_database.h"
-#include "own_database_item.h"
-#include "own_util.h"
+#include "../global/own_database.h"
+#include "../global/own_database_item.h"
+#include "../global/own_util.h"
 
 #include <QPainter>
 #include <QComboBox>

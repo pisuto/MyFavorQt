@@ -1,6 +1,6 @@
 #include "own_multilabels.h"
-#include "own_setting_view/own_addlabelview.h"
-#include "own_config.h"
+#include "../viewer/own_addlabelview.h"
+#include "../global/own_config.h"
 
 #include <QSignalMapper>
 #include <QMessageBox>

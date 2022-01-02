@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QThread>
 
-#include "item_upload_window/own_itemuploadview.h"
+#include "../dialog/own_itemuploadview.h"
 
 class QPainter;
 class QWidget;

@@ -1,7 +1,7 @@
 #include "own_util.h"
 #include "own_database.h"
 #include "own_database_item.h"
-#include "own_element.h"
+#include "../viewer/own_element.h"
 
 #include <QFrame>
 #include <QGridLayout>

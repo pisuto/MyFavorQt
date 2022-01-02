@@ -1,5 +1,5 @@
 #include "own_pagebar.h"
-#include "own_config.h"
+#include "../global/own_config.h"
 
 #include <QtGlobal>
 #include <QLabel>

@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QVBoxLayout>
 
-#include "own_button.h"
+#include "../button/own_button.h"
 #include "own_fadestackedview.h"
 
 namespace mf {

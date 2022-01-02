@@ -1,8 +1,8 @@
 #include "own_element.h"
-#include "own_config.h"
-#include "item_upload_window/own_itemuploadview.h"
-#include "own_database_item.h"
-#include "own_util.h"
+#include "../global/own_config.h"
+#include "../dialog/own_itemuploadview.h"
+#include "../global/own_database_item.h"
+#include "../global/own_util.h"
 
 #include <QLabel>
 #include <QGridLayout>

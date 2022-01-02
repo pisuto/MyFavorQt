@@ -1,5 +1,5 @@
 #include "own_itemuploadform.h"
-#include "own_config.h"
+#include "../global/own_config.h"
 
 #include <QVBoxLayout>
 #include <QLineEdit>

@@ -1,6 +1,6 @@
 #include "own_fadestackedview.h"
 #include "own_slidestackedview.h"
-#include "own_util.h"
+#include "../global/own_util.h"
 
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>

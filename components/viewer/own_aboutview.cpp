@@ -1,7 +1,7 @@
 #include "own_aboutview.h"
-#include "own_button.h"
-#include "own_config.h"
-#include "own_multilabels.h"
+#include "../button/own_button.h"
+#include "../global/own_config.h"
+#include "../button/own_multilabels.h"
 
 #include <QSplitter>
 #include <QLabel>

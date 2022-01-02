@@ -1,7 +1,7 @@
 #include "own_config.h"
 #include "own_database.h"
 #include "own_util.h"
-#include "item_upload_window/own_itemuploadview.h"
+#include "../dialog/own_itemuploadview.h"
 
 #include "MainWindow.h"
 

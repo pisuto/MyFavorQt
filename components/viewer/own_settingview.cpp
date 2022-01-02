@@ -1,6 +1,6 @@
 #include "own_settingview.h"
-#include "own_config.h"
-#include "own_setting_view/own_aboutview.h"
+#include "../global/own_config.h"
+#include "own_aboutview.h"
 
 #include <QSplitter>
 

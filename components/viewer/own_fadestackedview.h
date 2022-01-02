@@ -4,7 +4,7 @@
 #include <QStackedWidget>
 #include <QVariant>
 
-#include "own_pagebar.h"
+#include "../pagebar/own_pagebar.h"
 
 class QPropertyAnimation;
 

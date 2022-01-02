@@ -8,7 +8,7 @@ QT       += core gui sql xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-RC_FILE = icon.rc
+RC_FILE = resource/icon.rc
 TARGET = MyFavor
 TEMPLATE = app
 
@@ -26,62 +26,63 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    item_upload_window/own_imageviewer.cpp \
-    item_upload_window/own_itemuploadform.cpp \
-    item_upload_window/own_screencapture.cpp \
-        main.cpp \
+        components/dialog/own_imageviewer.cpp \
+        components/dialog/own_itemuploadform.cpp \
+        components/dialog/own_screencapture.cpp \
+        components/dialog/own_itemuploadview.cpp \
         MainWindow.cpp \
-        own_button.cpp \
-        own_config.cpp \
-        own_database.cpp \
-        own_element.cpp \
-        own_fadestackedview.cpp \
-        own_lineedit.cpp \
-        own_mainwidget.cpp \
-    own_multilabel.cpp \
-        own_pagebar.cpp \
-    own_reflection/own_reflect_item.cpp \
-    own_reflection/reflection/ref_define.cpp \
-    own_reflection/tool/ref_parser.cpp \
-    own_setting_view/own_aboutview.cpp \
-    own_setting_view/own_addlabelview.cpp \
-    own_settingview.cpp \
-        own_slidestackedview.cpp \
-        item_upload_window/own_itemuploadview.cpp \
-        own_util.cpp
+        main.cpp \
+        components/pagebar/own_pagebar.cpp \
+        components/edit/own_lineedit.cpp \
+        components/button/own_button.cpp \
+        components/button/own_multilabels.cpp \
+        components/global/own_config.cpp \
+        components/global/own_database.cpp \
+        components/global/own_util.cpp \
+        components/viewer/own_element.cpp \
+        components/viewer/own_fadestackedview.cpp \
+        components/viewer/own_mainwidget.cpp \
+        components/reflection/own_reflect_item.cpp \
+        components/reflection/reflection/ref_define.cpp \
+        components/reflection/tool/ref_parser.cpp \
+        components/viewer/own_aboutview.cpp \
+        components/viewer/own_addlabelview.cpp \
+        components/viewer/own_settingview.cpp \
+        components/viewer/own_slidestackedview.cpp \
 
 HEADERS += \
+        components/dialog/own_imageviewer.h \
+        components/dialog/own_itemuploadform.h \
+        components/dialog/own_screencapture.h \
+        components/dialog/own_itemuploadview.h \
         MainWindow.h \
-        item_upload_window/own_imageviewer.h \
-        item_upload_window/own_itemuploadform.h \
-        item_upload_window/own_itemuploadview.h \
-        item_upload_window/own_screencapture.h \
-        own_button.h \
-        own_config.h \
-        own_database.h \
-        own_database_item.h \
-        own_element.h \
-        own_fadestackedview.h \
-        own_lineedit.h \
-        own_mainwidget.h \
-        own_multilabels.h \
-        own_pagebar.h \
-        own_reflection/own_reflect_item.h \
-        own_reflection/reflection/ref_base.h \
-        own_reflection/reflection/ref_define.h \
-        own_reflection/reflection/ref_traits.h \
-        own_reflection/tool/ref_helper.h \
-        own_reflection/tool/ref_parser.h \
-        own_setting_view/own_aboutview.h \
-        own_setting_view/own_addlabelview.h \
-        own_settingview.h \
-        own_slidestackedview.h \
-        own_util.h
+        components/pagebar/own_pagebar.h \
+        components/edit/own_lineedit.h \
+        components/button/own_button.h \
+        components/button/own_multilabels.h \
+        components/global/own_config.h \
+        components/global/own_database.h \
+        components/global/own_util.h \
+        components/global/own_database_item.h \
+        components/viewer/own_element.h \
+        components/viewer/own_fadestackedview.h \
+        components/viewer/own_mainwidget.h \
+        components/reflection/own_reflect_item.h \
+        components/reflection/reflection/ref_define.h \
+        components/reflection/tool/ref_parser.h \
+        components/reflection/reflection/ref_base.h \
+        components/reflection/reflection/ref_traits.h \
+        components/reflection/tool/ref_helper.h \
+        components/viewer/own_aboutview.h \
+        components/viewer/own_addlabelview.h \
+        components/viewer/own_settingview.h \
+        components/viewer/own_slidestackedview.h \
+
 
 FORMS += \
-        MainWindow.ui \
-        OwnItemUploadView.ui \
-        own_setting_view/OwnAddLabelView.ui
+        ui/MainWindow.ui \
+        ui/OwnItemUploadView.ui \
+        ui/OwnAddLabelView.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -89,6 +90,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    images.qrc \
-    qss.qrc
+    resource/images.qrc \
+    resource/qss.qrc
 
