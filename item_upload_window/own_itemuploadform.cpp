@@ -90,7 +90,7 @@ OwnItemUploadForm::OwnItemUploadForm(QWidget* parent) : QFrame(parent),
     connect(mpStartCapBtn, &QPushButton::clicked, this, [&](){
         if(this->mpParent)
         {
-            OwnConfig::getInstance()->getMainWindowPtr()->showMinimized();
+            OwnConfig::getInstance()->handler(static_cast<MainWindow*>(Q_NULLPTR), HANDLER_OPER::OPER_MIN);
             this->mpParent->showMinimized();
         }
         this->mpCaptrue->showFullScreen();});

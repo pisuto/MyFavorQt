@@ -1,5 +1,6 @@
 #include "own_multilabels.h"
 #include "own_setting_view/own_addlabelview.h"
+#include "own_config.h"
 
 #include <QSignalMapper>
 #include <QMessageBox>
@@ -85,6 +86,8 @@ void OwnMultiLabels::removeLabel(int index) /* 第几个 */
                 delete own;
                 own = Q_NULLPTR;
             }
+            /* 删除全局数据 */
+            OwnConfig::getInstance()->handler(this, HANDLER_OPER::OPER_DEL, index - 1);
         }
         /* 重新排序 */
         if(mPos.col == 0) {
@@ -120,6 +123,14 @@ void OwnMultiLabels::removeLabel(int index) /* 第几个 */
             }
         }
     }
+}
+
+void OwnMultiLabels::insertLabel(QString name, QString path)
+{
+    this->addLabel(new OwnLabel(name));
+
+    /* 全局数据处理 */
+    OwnConfig::getInstance()->handler(this, HANDLER_OPER::OPER_ADD, name, path);
 }
 
 }

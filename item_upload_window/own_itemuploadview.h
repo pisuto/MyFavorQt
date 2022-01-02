@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include <QGraphicsEffect>
 
 #include "own_button.h"
 #include "own_fadestackedview.h"

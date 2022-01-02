@@ -16,6 +16,8 @@
 #define MF_DEFAULT_XML  "default.xml"
 #define MF_CUSTOM_XML   "setting.xml"
 
+class MainWindow;
+
 namespace mf {
 
 // 对元素的操作类型
@@ -94,6 +96,21 @@ template<typename T>
 QMutex OwnSingleton<T>::mMutex;
 
 class OwnItemUploadView;
+class OwnMultiLabels;
+class OwnSystemView;
+class OwnMainWidget;
+class OwnToggleButton;
+
+enum  HANDLER_OPER{
+    OPER_NULL = 0,
+    OPER_DEL = 1,
+    OPER_ADD,
+    OPER_MOD,
+    OPER_GET,
+    OPER_MIN,
+    OPER_HIDE,
+    OPER_SHOW,
+};
 
 // 单例配置类
 class OwnConfig : public OwnSingleton<OwnConfig>
@@ -103,9 +120,7 @@ public:
         helper(new ref::xml_parser(MF_CUSTOM_XML)) {}
     ~OwnConfig() {}
 
-    void init();
-    void save() { helper.write(data); }
-
+    // 待整改
     QSize getDisplayImageSize() const {
         if(data.screen.index >= data.screen.resogrp.size()) return QSize(0, 0);
         const auto& image = data.screen.resogrp[data.screen.index].image;
@@ -115,18 +130,79 @@ public:
     oconfig& getSettingData() { return data; }
     const QVector<int>& getCategoryCount() const { return mPageCount; }
     void updateCategoryCount(int category);
+    OwnItemUploadView* getItemViewer() const { return mpItemViewer; }
+    OwnToggleButton* getToggleButton() const { return mpToggle; }
 
-    QWidget* getMainWindowPtr() const { return mpMainWindow; }
-    void setMainWindowPtr(QWidget* pointer) { mpMainWindow = pointer; }
-    void hideWindowToTray();
-    void showWindowFromTray();
-    OwnItemUploadView *getItemViewer();
-    void setItemUploadView(OwnItemUploadView* ptr);
+    // 处理函数
+    template<typename T, typename... Args>
+    void handler(T*, int /* HANDLER_OPER */, Args...) {}
+
+    template<typename... Args>
+    void handler() {
+        resolve_handler();
+    }
+
+    template<>
+    void handler(MainWindow* object, int oper) {
+        resolve_handler(object, oper);
+    }
+
+    template<>
+    void handler(OwnMainWidget* object, int oper) {
+        resolve_handler(object, oper);
+    }
+
+    template<>
+    void handler(OwnItemUploadView* object, int oper) {
+        resolve_handler(object, oper);
+    }
+
+    template<>
+    void handler(OwnToggleButton* object, int oper) {
+        resolve_handler(object, oper);
+    }
+
+    template<>
+    void handler(OwnMultiLabels* object, int oper, const QString& name, const QString& path) {
+        resolve_handler(object, oper, name, path);
+    }
+
+    template<>
+    void handler(OwnMultiLabels* object, int oper, int index) {
+        resolve_handler(object, oper, index);
+    }
+
+    template<>
+    void handler(OwnSystemView* object, int oper, QColor color) {
+        resolve_handler(object, oper, color);
+    }
+
+    template<>
+    void handler(OwnSystemView* object, int oper, bool apply) {
+        resolve_handler(object, oper, apply);
+    }
+
+private:
+    // 处理函数专用函数
+    void resolve_handler();
+
+    void resolve_handler(MainWindow* object, int oper);
+    void resolve_handler(OwnMainWidget* object, int oper);
+    void resolve_handler(OwnItemUploadView* object, int oper);
+    void resolve_handler(OwnToggleButton* object, int oper);
+
+    void resolve_handler(OwnMultiLabels* object, int oper, const QString& name, const QString& path);
+    void resolve_handler(OwnMultiLabels* object, int oper, int index);
+
+    void resolve_handler(OwnSystemView* object, int oper, QColor color);
+    void resolve_handler(OwnSystemView* object, int oper, bool apply);
 
 private:
     QVector<int> mPageCount;
     QWidget* mpMainWindow;
+    QWidget* mpMainWidget;
     mf::OwnItemUploadView* mpItemViewer;
+    mf::OwnToggleButton* mpToggle;
 
     /* 全局配置数据 */
     oconfig data;

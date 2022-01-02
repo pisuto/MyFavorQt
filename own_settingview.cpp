@@ -19,10 +19,6 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
      *          分辨率设置，使用下拉框选择
      *          category字体大小设置
      *          增删category，使用滑动列表，点击增加按钮弹出窗口
-     * uint:
-     *          标题字体大小设置
-     *          其余字体大小设置
-     *          图片保存路径，点击输入
      * about:
      *          作者、Github、Gitee、CSDN
      *
@@ -56,7 +52,6 @@ OwnSettingView::OwnSettingView(QWidget *parent) :
                                               QFont(defBtn.font.name.c_str(),
                                                     defBtn.font.extent,
                                                     defBtn.font.weight), this));
-    mpStackedView->addWidget(new QFrame);
     mpStackedView->addWidget(new OwnAboutView(static_cast<int>(defBtn.size.height),
                                               QFont(defBtn.font.name.c_str(),
                                                     defBtn.font.extent,

@@ -21,20 +21,21 @@ int main(int argc, char *argv[])
         qApp->setStyleSheet(qss);
         qssFile.close();
     }
+
     // 初始化配置
-    if(!mf::OwnUtil::checkXmlExists())
-        return EXIT_FAILURE;
-    auto spConfig = mf::OwnConfig::getInstance();
-    spConfig->init();
+    auto pConfig = mf::OwnConfig::getInstance();
+    pConfig->handler();
 
     MainWindow w;
-    spConfig->setMainWindowPtr(&w);
+    pConfig->handler(&w, 2 /* OPER_ADD */);
     w.show();
 
 #if 0 /* 创建默认模板 */
     ref::format_helper helper(new ref::xml_parser("default.xml"));
     oconfig config;
+    config.modified = false;
     config.trayed = false;
+    config.bgcolor = {255, 255, 255, 255};
     config.category = { {{"Anime", ":/images/svgtopng/anime.png"}, {"Manga", ":/images/svgtopng/manga.png"},
                          {"Movie", ":/images/svgtopng/movie.png"}, {"Music", ":/images/svgtopng/music.png"},
                          {"Photo", ":/images/svgtopng/photos.png"}} };
@@ -51,9 +52,7 @@ int main(int argc, char *argv[])
     config.pagebar = { {{"text", 9, 0, "Microsoft YaHei", ""}} };
     config.setting.btngrp = { 0, 0, {  {0, {100, 40}, {}, {"System", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
                                         {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}},
-                                       {1, {100, 40}, {}, {"Unit", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
-                                        {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}},
-                                       {2, {100, 40}, {}, {"About", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
+                                       {1, {100, 40}, {}, {"About", 25, 50 /* 没用 */, "Microsoft YaHei", ""},
                                         {{200, 200, 200, 40}, {150, 150, 150, 40}, {100, 100, 100, 80}}}, }};
 
     helper.write(config);

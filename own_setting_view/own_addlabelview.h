@@ -5,6 +5,8 @@
 #include <QLayout>
 
 class QFrame;
+class QComboBox;
+class QLineEdit;
 
 namespace Ui {
 class OwnAddLabelView;
@@ -19,12 +21,19 @@ public:
     explicit OwnAddLabelView(QWidget *parent = nullptr);
     ~OwnAddLabelView();
 
+public slots:
+    void confirm();
+
+signals:
+    void confirmMsg(QString, QString);
+
 private:
     QFrame* createDropImageBox();
 
     Ui::OwnAddLabelView *ui;
-
     QVBoxLayout* mpLayout;
+    QLineEdit* mpLineEdit;
+    QComboBox* mpCombox;
 };
 
 }

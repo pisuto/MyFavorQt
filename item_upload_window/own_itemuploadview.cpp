@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QGraphicsDropShadowEffect>
 
 namespace mf {
 
@@ -21,10 +22,14 @@ OwnItemUploadView::OwnItemUploadView(QWidget *parent) :
     ui->setupUi(this);
 
     this->setAttribute(Qt::WA_TranslucentBackground);
-    this->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
+    mpBtnGrp->setNormalButtonSize(QSize(80, 30));
     auto screenCaptureBtn =
-            new OwnButton(0, QIcon(":/images/svgtopng/anime.png"), "New Item");
+            new OwnButton(0, QIcon(":/images/svgtopng/anime.png"), "New");
+    screenCaptureBtn->setButtonStyle();
+    screenCaptureBtn->setIconSize(QSize(20, 20));
+    screenCaptureBtn->setFixedSize(QSize(80, 30));
     connect(screenCaptureBtn, &QPushButton::clicked, this, [&](){ mpStackedView->switchWidget(0); });
     mpBtnGrp->addButton(screenCaptureBtn);
     mpBtnGrp->addStretch(1);
@@ -47,7 +52,7 @@ OwnItemUploadView::OwnItemUploadView(QWidget *parent) :
     pHorLayout->addWidget(pCancelBtn);
 
     // 设置边框
-    mpMainLayout->setContentsMargins(5, 5, 5, 5);
+    mpMainLayout->setContentsMargins(10, 10, 10, 10);
     mpMainLayout->addWidget(mpBtnGrp);
     mpMainLayout->addWidget(mpStackedView);
     mpMainLayout->addLayout(pHorLayout);
@@ -62,14 +67,37 @@ OwnItemUploadView::~OwnItemUploadView()
 void OwnItemUploadView::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e)
+
     // 绘制圆角
-    QPainter p(this);
-    p.setPen(Qt::NoPen);
-    p.setBrush(QBrush(QColor(0, 0, 0, 0)));
-    p.drawRect(rect());
-    p.setRenderHint(QPainter::Antialiasing);
-    p.setBrush(palette().color(QPalette::Window));
-    p.drawRoundedRect(0, 0, width() - 1, height() - 1, 6, 6);
+    QPainter painter(this);
+    painter.save();
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QBrush(QColor(0, 0, 0, 0)));
+    painter.drawRect(rect());
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(palette().color(QPalette::Window));
+    painter.drawRoundedRect(0, 0, width() - 1, height() - 1, 6, 6);
+    painter.restore();
+
+    // 绘制阴影
+    painter.save();
+    QPainterPath path;
+    path.setFillRule(Qt::WindingFill);
+    path.addRect(5, 5, this->width() - 10, this->height() - 10);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.fillPath(path, QBrush(Qt::white));
+
+    QColor color(0, 0, 0, 50);
+    for (int i = 0; i < 4; i++)
+    {
+        QPainterPath path;
+        path.setFillRule(Qt::WindingFill);
+        path.addRect(5 - i, 5 - i, this->width() - (5 - i) * 2, this->height() - (5 - i) * 2);
+        color.setAlpha(100 - qSqrt(i) * 50);
+        painter.setPen(color);
+        painter.drawPath(path);
+    }
+    painter.restore();
 }
 
 void OwnItemUploadView::mouseMoveEvent(QMouseEvent* event)

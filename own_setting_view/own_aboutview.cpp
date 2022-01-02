@@ -9,6 +9,8 @@
 #include <QListView>
 #include <QMenu>
 #include <QWidgetAction>
+#include <QProcess>
+#include <QMessageBox>
 
 namespace mf {
 
@@ -59,22 +61,7 @@ QFrame* createInfoLabel(const QFont& font, const QString& prefix, const QString&
     return pFrame;
 }
 
-QFrame* createToggleButton(int thumb, int track, const QFont& font, const QString& prefix, float scale = 0.5f)
-{
-    auto pLayout = new QHBoxLayout();
-    auto prefixLabel = new QLabel(prefix);
-    prefixLabel->setFont(QFont(font.family(), static_cast<int>(font.pointSize() * scale), QFont::Normal));
-    auto button = new OwnToggleButton(track, thumb);
-
-    pLayout->addWidget(prefixLabel);
-    pLayout->addStretch(1);
-    pLayout->addWidget(button);
-    auto pFrame = new QFrame;
-    pFrame->setLayout(pLayout);
-    return pFrame;
-}
-
-QFrame* createApplyButton(int size, const QFont& font, const QString& prefix, float scale = 0.5f)
+QFrame* OwnSystemView::createApplyButton(int size, const QFont& font, const QString& prefix, float scale)
 {
     auto pLayout = new QHBoxLayout();
     auto prefixLabel = new QLabel(prefix);
@@ -86,6 +73,7 @@ QFrame* createApplyButton(int size, const QFont& font, const QString& prefix, fl
                          "QPushButton:hover{background-color:rgb(235, 235, 235);}"
                          "QPushButton:pressed{background-color:rgb(200, 200, 200);}");
     button->setStyleSheet(style);
+    connect(button, &QPushButton::clicked, this, &OwnSystemView::recvMsgFromApplyButton);
 
     pLayout->addWidget(prefixLabel);
     pLayout->addStretch(1);
@@ -95,12 +83,33 @@ QFrame* createApplyButton(int size, const QFont& font, const QString& prefix, fl
     return pFrame;
 }
 
-QFrame* createColorCombox(const QFont& font, const QString& prefix, float scale = 0.5f)
+QFrame* OwnSystemView::createToggleButton(int thumb, int track, const QFont& font, const QString& prefix, float scale)
+{
+    auto pLayout = new QHBoxLayout();
+    auto prefixLabel = new QLabel(prefix);
+    prefixLabel->setFont(QFont(font.family(), static_cast<int>(font.pointSize() * scale), QFont::Normal));
+    auto button = new OwnToggleButton(track, thumb);
+    button->setChecked(OwnConfig::getInstance()->getSettingData().trayed);
+    OwnConfig::getInstance()->handler(button, HANDLER_OPER::OPER_ADD);
+    connect(button, static_cast<void(OwnToggleButton::*)(bool)>(&OwnToggleButton::toggle), this,
+            [=](bool checked) { auto& data = OwnConfig::getInstance()->getSettingData();
+                                data.trayed = checked; data.modified = true; });
+
+    pLayout->addWidget(prefixLabel);
+    pLayout->addStretch(1);
+    pLayout->addWidget(button);
+    auto pFrame = new QFrame;
+    pFrame->setLayout(pLayout);
+    return pFrame;
+}
+
+QFrame* OwnSystemView::createColorCombox(const QFont& font, const QString& prefix, float scale)
 {
     auto pLayout = new QHBoxLayout();
     auto prefixLabel = new QLabel(prefix);
     prefixLabel->setFont(QFont(font.family(), static_cast<int>(font.pointSize() * scale), QFont::Normal));
     auto button = new OwnColorCombox;
+    connect(button, SIGNAL(colorChanged(QColor)), this, SLOT(recvMsgFromColorBox(QColor)));
 
     pLayout->addWidget(prefixLabel);
     pLayout->addStretch(1);
@@ -142,6 +151,14 @@ QFrame* OwnSystemView::createDropCombox(const QFont& font, const QString& prefix
                                      break;
                                  }
                              }
+                             /* 重启 */
+                             QMessageBox::StandardButton reply;
+                             reply = QMessageBox::question(Q_NULLPTR, "Restart", "Please make sure whether the configuration takes effect at this moment?", QMessageBox::Yes | QMessageBox::No);
+                             if(reply == QMessageBox::Yes)
+                             {
+                                 qApp->quit();
+                                 QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+                             }
                            });
         menu->addAction(pAction);
     }
@@ -177,6 +194,7 @@ QFrame* OwnSystemView::createMultiLabels()
     for(const auto& category : categories) {
         labels->addLabel(new OwnLabel(category.name.c_str()));
     }
+    connect(this, SIGNAL(sendMsgToObj(QString, QString)), labels, SLOT(insertLabel(QString, QString)));
 
     auto button = new QPushButton("Add");
     button->setFixedSize(QSize(90, 30));
@@ -235,9 +253,24 @@ OwnSystemView::OwnSystemView(int height, QFont font, QWidget *parent) : QFrame(p
     mpMainLayout->addWidget(createInfoLabel(font, "Warning: the operation may cause data loss.", "", 0.5f));
     mpMainLayout->addStretch(1);
     this->setLayout(mpMainLayout);
+
+    connect(mpDialog, SIGNAL(confirmMsg(QString, QString)), this, SLOT(recvMsgFromDialog(QString, QString)));
 }
 
+void OwnSystemView::recvMsgFromDialog(QString name, QString path)
+{
+    emit sendMsgToObj(name, path);
+}
 
+void OwnSystemView::recvMsgFromColorBox(QColor color)
+{
+    OwnConfig::getInstance()->handler(this, HANDLER_OPER::OPER_MOD, color);
+}
+
+void OwnSystemView::recvMsgFromApplyButton()
+{
+    OwnConfig::getInstance()->handler(this, HANDLER_OPER::OPER_MOD, true);
+}
 
 
 

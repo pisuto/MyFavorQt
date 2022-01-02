@@ -10,8 +10,10 @@ class QSplitter;
 
 namespace mf {
 
-class OwnBublePanel : public QFrame {
+class OwnMultiLabels;
 
+class OwnBublePanel : public QFrame {
+    Q_OBJECT
 public:
     explicit OwnBublePanel(QWidget* parent = Q_NULLPTR);
     ~OwnBublePanel() {}
@@ -24,7 +26,7 @@ private:
 
 
 class OwnAboutView : public QFrame {
-
+    Q_OBJECT
 public:
     explicit OwnAboutView(int height, QFont font, QWidget* parent = Q_NULLPTR);
     ~OwnAboutView() {}
@@ -36,18 +38,27 @@ private:
 
 
 class OwnSystemView : public QFrame {
-
+    Q_OBJECT /* https://q.cnblogs.com/q/43654/ */
 public:
     explicit OwnSystemView(int height, QFont font, QWidget* parent = Q_NULLPTR);
     ~OwnSystemView() {}
 
+    QFrame* createApplyButton(int size, const QFont& font, const QString& prefix, float scale = 0.5f);
+    QFrame* createToggleButton(int thumb, int track, const QFont& font, const QString& prefix, float scale = 0.5f);
+    QFrame* createColorCombox(const QFont& font, const QString& prefix, float scale = 0.5f);
     QFrame* createDropCombox(const QFont& font, const QString& prefix, float scale = 0.5f);
     QFrame* createMultiLabels();
+
+public slots:
+    void recvMsgFromDialog(QString name, QString path);
+    void recvMsgFromColorBox(QColor color);
+    void recvMsgFromApplyButton();
+
 signals:
-    void dropComboxChanged(QString);
+    void sendMsgToObj(QString, QString);
 
 private:
-    OwnAddLabelView* mpDialog;
+    mf::OwnAddLabelView* mpDialog;
     QVBoxLayout* mpMainLayout;
 };
 

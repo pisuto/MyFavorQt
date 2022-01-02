@@ -1,5 +1,6 @@
 #include "own_config.h"
 #include "own_database.h"
+#include "own_util.h"
 #include "item_upload_window/own_itemuploadview.h"
 
 #include "MainWindow.h"
@@ -97,8 +98,23 @@ const QString SQL_SYNTAX::SELECT_ITEM_POS_OFFSET_SQL =
 
 /*--------------------------------------------------------------------------*/
 
-void OwnConfig::init()
+
+void OwnConfig::updateCategoryCount(int category)
 {
+    auto cnt = OwnDatabase::getInstance()->categoryCount(category);
+    mPageCount[category - 1] = cnt;
+}
+
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+
+void OwnConfig::resolve_handler()
+{
+    if(!mf::OwnUtil::checkXmlExists()) {
+        return;
+    }
+
     // 在我的文档下面创建文件夹放置图片
     QString location = SQL_TABLE_ITEM::ImgFileLocation();
     QDir dir;
@@ -119,32 +135,146 @@ void OwnConfig::init()
     }
 }
 
-void OwnConfig::updateCategoryCount(int category)
+void OwnConfig::resolve_handler(MainWindow *object, int oper)
 {
-    auto cnt = OwnDatabase::getInstance()->categoryCount(category);
-    mPageCount[category - 1] = cnt;
+    switch (oper) {
+    case HANDLER_OPER::OPER_ADD:
+    {
+        Q_ASSERT(object);
+        mpMainWindow = object;
+        break;
+    }
+    case HANDLER_OPER::OPER_MIN:
+    {
+        auto window = qobject_cast<MainWindow*>(mpMainWindow);
+        window->showMinimized();
+        break;
+    }
+    case HANDLER_OPER::OPER_HIDE:
+    {
+        auto window = qobject_cast<MainWindow*>(mpMainWindow);
+        window->hide();
+        break;
+    }
+    case HANDLER_OPER::OPER_SHOW:
+    {
+        auto window = qobject_cast<MainWindow*>(mpMainWindow);
+        window->showNormal();
+        break;
+    }
+    default:
+        break;
+    }
 }
 
-void OwnConfig::hideWindowToTray()
+void OwnConfig::resolve_handler(OwnMainWidget *object, int oper)
 {
-    auto pWindow = qobject_cast<MainWindow*>(getMainWindowPtr());
-    pWindow->hide();
+    Q_ASSERT(object);
+    if(oper == HANDLER_OPER::OPER_ADD) {
+        mpMainWidget = object;
+    }
+    else if(oper == HANDLER_OPER::OPER_DEL) {
+        /* 析构 */
+        helper.write(data);
+    }
 }
 
-void OwnConfig::showWindowFromTray()
+void OwnConfig::resolve_handler(OwnItemUploadView *object, int oper)
 {
-    auto pWindow = qobject_cast<MainWindow*>(getMainWindowPtr());
-    pWindow->showNormal();
+    switch (oper) {
+    case HANDLER_OPER::OPER_ADD:
+    {
+        Q_ASSERT(object);
+        mpItemViewer = object;
+        break;
+    }
+    case HANDLER_OPER::OPER_GET:
+    {
+        object = mpItemViewer;
+        break;
+    }
+    default:
+        break;
+    }
 }
 
-OwnItemUploadView *OwnConfig::getItemViewer()
+void OwnConfig::resolve_handler(OwnToggleButton* object, int oper)
 {
-    return mpItemViewer;
+    switch (oper) {
+    case HANDLER_OPER::OPER_ADD:
+    {
+        Q_ASSERT(object);
+        mpToggle = object;
+        break;
+    }
+    case HANDLER_OPER::OPER_GET:
+    {
+        object = mpToggle;
+        break;
+    }
+    default:
+        break;
+    }
 }
 
-void OwnConfig::setItemUploadView(OwnItemUploadView *ptr)
+void OwnConfig::resolve_handler(OwnMultiLabels *object, int oper, const QString &name, const QString &path)
 {
-    mpItemViewer = ptr;
+    Q_UNUSED(object);
+    if(oper == HANDLER_OPER::OPER_ADD) {
+        data.category.categories.push_back({name.toStdString(), path.toStdString()});
+    }
+}
+
+void OwnConfig::resolve_handler(OwnMultiLabels *object, int oper, int index)
+{
+    Q_UNUSED(object);
+    if(oper == HANDLER_OPER::OPER_DEL) {
+        auto& categories = data.category.categories;
+        const auto count = categories.size();
+        for(size_t i = static_cast<size_t>(index); i < count - 1; ++i) {
+            categories[i] = categories[i + 1];
+        }
+        categories.pop_back();
+    }
+}
+
+void OwnConfig::resolve_handler(OwnSystemView *object, int oper, QColor color)
+{
+    Q_UNUSED(object);
+    Q_ASSERT(mpMainWidget);
+    if(oper == HANDLER_OPER::OPER_MOD) {
+        int red = 255, green = 255, blue = 255;
+        color.getRgb(&red, &green, &blue);
+        auto pWidget = qobject_cast<OwnMainWidget*>(mpMainWidget);
+        pWidget->setStyleSheet(QString("QWidget#own_mainwidget{background-color:rgb(%1, %2, %3);}"
+                                       "QFrame#own_fadeview{background-color:rgb(%1, %2, %3);}")
+                            .arg(red).arg(green).arg(blue));
+        data.bgcolor = {red, green, blue, 255};
+    }
+}
+
+void OwnConfig::resolve_handler(OwnSystemView *object, int oper, bool apply)
+{
+    Q_UNUSED(object);
+    Q_UNUSED(object);
+    Q_UNUSED(apply);
+    switch (oper) {
+    case HANDLER_OPER::OPER_MOD:
+    {
+        Q_ASSERT(mpMainWidget);
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(mpMainWidget, "Delete", "Please confirm whether to overwrite setting file?", QMessageBox::Yes | QMessageBox::No);
+        if(reply == QMessageBox::Yes)
+        {
+            if(OwnUtil::copyFile("default.xml", "setting.xml"))
+            {
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 }

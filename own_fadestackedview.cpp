@@ -18,6 +18,7 @@ OwnFadeStackedView::OwnFadeStackedView(OwnPageBar* pageBar, QWidget* parent) :
     mbIsAnimation(false),
     mpPageBar(pageBar)
 {
+    setObjectName("own_fadeview");
     if(mpPageBar)
         connect(mpPageBar, &OwnPageBar::currentPageChanged, this, &OwnFadeStackedView::switchPage);
 }

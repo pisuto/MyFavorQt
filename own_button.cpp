@@ -29,6 +29,9 @@ OwnButtonGroup::OwnButtonGroup(QWidget* parent, BTN_GRP_LAYOUT type) : QWidget(p
     this->setLayout(mpLayout);
     this->setAttribute(Qt::WidgetAttribute::WA_StyledBackground);  // 重要
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnButtonGroup::valueChangedAnimation);
+    if(type == BTN_GRP_LAYOUT::HORIZONTAL) { /* 暂时如此规避 */
+        this->setStyleSheet("background-color:rgb(245, 245, 245);");
+    }
 }
 
 void OwnButtonGroup::addButton(OwnButton *pBtn)
@@ -140,33 +143,71 @@ void OwnButtonGroup::setNormalButtonSize(QSize btnSize) /* 初始化时调用 */
     }
 }
 
+OwnTopButtonGroup::OwnTopButtonGroup(QWidget* parent) : QWidget(parent),
+    mpParent(parent),
+    mpCloseBtn(new QPushButton()),
+    mpMinBtn(new QPushButton()),
+    mpLayout(new QHBoxLayout())
+{
+    auto closeStyle = QString("QPushButton{border-image: url(:/images/windows/close.png);}"
+                              "QPushButton:hover{border-image: url(:/images/windows/close-pressed.png);}"
+                              "QPushButton:pressed{border-image: url(:/images/windows/close-pressed.png);}");
+
+    auto minStyle = QString("QPushButton{border-image: url(:/images/windows/min.png);border:none;}"
+                            "QPushButton:hover{border-image: url(:/images/windows/min-pressed.png);}"
+                            "QPushButton:pressed{border-image: url(:/images/windows/min-pressed.png);}");
+    mpCloseBtn->setStyleSheet(closeStyle);
+    mpMinBtn->setStyleSheet(minStyle);
+
+    mpCloseBtn->setFixedSize(QSize(14, 14));
+    mpMinBtn->setFixedSize(QSize(14, 14));
+
+    mpLayout->addStretch(1);
+    mpLayout->addWidget(mpMinBtn);
+    mpLayout->addWidget(mpCloseBtn);
+    mpLayout->setContentsMargins(0,0,0,0);
+    this->setLayout(mpLayout);
+
+    connect(mpCloseBtn, &QPushButton::pressed, this, [=](){ this->checkTrayed(); });
+    connect(mpMinBtn,   &QPushButton::pressed, this, [&](){ mpParent->showMinimized(); });
+}
+
+
 void OwnTopButtonGroup::checkTrayed()
 {
     auto pConfig = OwnConfig::getInstance();
     auto& data = pConfig->getSettingData();
     if(data.trayed)
     {
-        pConfig->hideWindowToTray();
+        pConfig->handler(static_cast<MainWindow*>(Q_NULLPTR), HANDLER_OPER::OPER_HIDE);
+        pConfig->handler(static_cast<OwnToggleButton*>(Q_NULLPTR), HANDLER_OPER::OPER_MOD, true);
+        emit closeWindowToTray(true);
+        return;
     }
-    else
+    if(!data.modified)
     {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(mpParent, "Trayed", "Need to minmize to tray or just quit?", QMessageBox::Yes | QMessageBox::No);
+        reply = QMessageBox::question(mpParent, "Trayed", "Please confirm whether to minimize?", QMessageBox::Yes | QMessageBox::No);
         if(reply == QMessageBox::Yes)
         {
             data.trayed = true;
-            pConfig->hideWindowToTray();
-
+            pConfig->handler(static_cast<OwnToggleButton*>(Q_NULLPTR), HANDLER_OPER::OPER_MOD, true);
+            emit closeWindowToTray(true);
+            pConfig->handler(static_cast<MainWindow*>(Q_NULLPTR), HANDLER_OPER::OPER_HIDE);
         }
         else
         {
+            pConfig->handler(static_cast<OwnToggleButton*>(Q_NULLPTR), HANDLER_OPER::OPER_MOD, false);
             data.trayed = false;
             QApplication::quit();
-            return; // 不是立即退出
         }
+        return;
     }
-
-    emit closeWindowToTray(true);
+    if(!data.trayed)
+    {
+        pConfig->handler(static_cast<OwnToggleButton*>(Q_NULLPTR), HANDLER_OPER::OPER_MOD, false);
+        QApplication::quit();
+    }
 }
 
 void OwnButton::setButtonStyle(int font, QRgb normal, QRgb hover, QRgb pressed, QString family)

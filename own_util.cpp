@@ -43,7 +43,7 @@ void OwnUtil::createFile(const QString &fileName)
 
 bool OwnUtil::deleteFile(const QString &path)
 {
-    if(path.isEmpty() || !QDir().exists(path))
+    if(path.isEmpty())
         return false;
     QFileInfo info(path);
     if(info.isFile())
@@ -55,7 +55,7 @@ bool OwnUtil::copyFile(const QString& source, const QString& target)
 {
     if(source == target)
         return true;
-    if(isFileExist(target) || !isFileExist(source))
+    if(!isFileExist(source) || (isFileExist(target) && !deleteFile(target)))
         return false;
     if(!QFile::copy(source, target))
         return false;
@@ -66,18 +66,16 @@ bool OwnUtil::checkXmlExists()
 {
     if(!mf::OwnUtil::isFileExist(MF_DEFAULT_XML))
     {
-        QMessageBox msgBox;
-        msgBox.setText("Please check if default.xml exist.");
-        msgBox.exec();
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::critical(Q_NULLPTR, "Error", "No default configuration found!", QMessageBox::Ok);
         return false;
     }
     else if(!mf::OwnUtil::isFileExist(MF_CUSTOM_XML))
     {
         if(!mf::OwnUtil::copyFile(MF_DEFAULT_XML, MF_CUSTOM_XML))
         {
-            QMessageBox msgBox;
-            msgBox.setText("Copying default.xml failed.");
-            msgBox.exec();
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::critical(Q_NULLPTR, "Error", "Copy default configuration failed!", QMessageBox::Ok);
             return false;
         }
     }

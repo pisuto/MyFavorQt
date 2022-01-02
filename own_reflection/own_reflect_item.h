@@ -104,9 +104,11 @@ struct osetting {
 
 /* configuration */
 struct oconfig {
+    bool modified; /* 是否修改过 */
     bool trayed; /* 最小化 */
     ocategory category;
     oscreen screen;
+    orgba bgcolor;
     /* 组件 */
     obtngrp btngrp;
     ocomponent element;

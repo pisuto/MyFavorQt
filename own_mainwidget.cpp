@@ -21,18 +21,19 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
 {
     // 设置对话框
     auto pConfig = OwnConfig::getInstance();
-    pConfig->setItemUploadView(mpItemViewer);
+    pConfig->handler(mpTopBtns, HANDLER_OPER::OPER_ADD);
+    pConfig->handler(mpItemViewer, HANDLER_OPER::OPER_ADD);
     // 初始化托盘
     mpTrayFunc->setIcon(QIcon(":images/icon/tray.png"));
     mpTrayFunc->setToolTip(tr("MyFavor"));
     connect(mpTrayFunc, static_cast<void(QSystemTrayIcon::*)(QSystemTrayIcon::ActivationReason)>(&QSystemTrayIcon::activated),
             this, [](QSystemTrayIcon::ActivationReason reason)
-                  { if(reason == QSystemTrayIcon::DoubleClick) OwnConfig::getInstance()->showWindowFromTray(); });
+                  { if(reason == QSystemTrayIcon::DoubleClick) OwnConfig::getInstance()->handler(static_cast<MainWindow*>(Q_NULLPTR), HANDLER_OPER::OPER_SHOW); });
     auto pTrayMenu = new QMenu(this);
     {
         auto pAction = new QAction(tr("show"), this);
         connect(pAction, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
-                this, [](){ OwnConfig::getInstance()->showWindowFromTray(); });
+                this, [](){ OwnConfig::getInstance()->handler(static_cast<MainWindow*>(Q_NULLPTR), HANDLER_OPER::OPER_SHOW); });
         pTrayMenu->addAction(pAction);
     }
     {
@@ -43,7 +44,7 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
     }
     mpTrayFunc->setContextMenu(pTrayMenu);
     connect(mpTopBtns, static_cast<void(OwnTopButtonGroup::*)(bool)>(&OwnTopButtonGroup::closeWindowToTray), this,
-            [=](bool){ this->mpTrayFunc->show(); mpTrayFunc->showMessage(windowTitle(), "Here!"); });
+            [=](bool trayed){ if(!trayed) return; this->mpTrayFunc->show(); mpTrayFunc->showMessage(windowTitle(), "Here!"); });
 
     // 创建buttons
     mpBtnGrp->setObjectName("own_buttongroup");
@@ -115,12 +116,20 @@ OwnMainWidget::OwnMainWidget(QWidget *parent) :
     mpMainLayout->addWidget(mpStackedView);
     mpMainLayout->addWidget(mpPageBar);
     this->setLayout(mpMainLayout);
+
+    const auto& color = setting.bgcolor;
+    this->setObjectName("own_mainwidget");
+    this->setStyleSheet(QString("QWidget#own_mainwidget{background-color:rgb(%1, %2, %3);}"
+                                "QFrame#own_fadeview{background-color:rgb(%1, %2, %3);}")
+                        .arg(color.red).arg(color.green).arg(color.blue));
+
+    pConfig->handler(this, HANDLER_OPER::OPER_ADD);
 }
 
 OwnMainWidget::~OwnMainWidget()
 {
     // 保存配置
-    OwnConfig::getInstance()->save();
+    OwnConfig::getInstance()->handler(this, HANDLER_OPER::OPER_DEL);
 }
 
 }

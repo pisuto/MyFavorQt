@@ -51,6 +51,7 @@ public:
 
 public slots:
     void removeLabel(int index); /* 只有通过信号槽才能删除 */
+    void insertLabel(QString name, QString path);
 
 private:
     int mCol;

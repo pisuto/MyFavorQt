@@ -85,34 +85,7 @@ class OwnTopButtonGroup : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OwnTopButtonGroup(QWidget* parent = nullptr) : QWidget(parent),
-        mpParent(parent),
-        mpCloseBtn(new QPushButton()),
-        mpMinBtn(new QPushButton()),
-        mpLayout(new QHBoxLayout())
-    {
-        auto closeStyle = QString("QPushButton{border-image: url(:/images/windows/close.png);}"
-                                  "QPushButton:hover{border-image: url(:/images/windows/close-pressed.png);}"
-                                  "QPushButton:pressed{border-image: url(:/images/windows/close-pressed.png);}");
-
-        auto minStyle = QString("QPushButton{border-image: url(:/images/windows/min.png);border:none;}"
-                                "QPushButton:hover{border-image: url(:/images/windows/min-pressed.png);}"
-                                "QPushButton:pressed{border-image: url(:/images/windows/min-pressed.png);}");
-        mpCloseBtn->setStyleSheet(closeStyle);
-        mpMinBtn->setStyleSheet(minStyle);
-
-        mpCloseBtn->setFixedSize(QSize(14, 14));
-        mpMinBtn->setFixedSize(QSize(14, 14));
-
-        mpLayout->addStretch(1);
-        mpLayout->addWidget(mpMinBtn);
-        mpLayout->addWidget(mpCloseBtn);
-        mpLayout->setContentsMargins(0,0,0,0);
-        this->setLayout(mpLayout);
-
-        connect(mpCloseBtn, &QPushButton::pressed, this, [=](){ this->checkTrayed(); });
-        connect(mpMinBtn,   &QPushButton::pressed, this, [&](){ mpParent->showMinimized(); });
-    }
+    explicit OwnTopButtonGroup(QWidget* parent = nullptr);
 
     ~OwnTopButtonGroup() {}
 
@@ -135,6 +108,7 @@ public:
     explicit OwnToggleButton(int trackRadius, int thumbRadius, QWidget* parent = nullptr);
     ~OwnToggleButton() override {}
 
+    void setChecked(bool checked);
     QSize sizeHint() const override;
 
 signals:
@@ -145,7 +119,6 @@ protected:
     void resizeEvent(QResizeEvent*) override;
     void mouseReleaseEvent(QMouseEvent  *) override;
     void enterEvent(QEvent *event) override;
-    void setChecked(bool checked);
 
     int offset();
     void setOffset(int value);

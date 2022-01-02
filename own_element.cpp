@@ -58,6 +58,7 @@ OwnElement::OwnElement(QString fileName, QString title, QString user, QString de
     this->setFrameShape(StyledPanel);
     this->setFrameShadow(Raised);
     this->setLayout(mpLayout);
+    this->setStyleSheet("QFrame#own_element{background-color:rgb(245, 245, 245);}");
 }
 
 void OwnElement::initRightMenu()

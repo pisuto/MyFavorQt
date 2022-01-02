@@ -20,8 +20,8 @@ OwnSlideStackedView::OwnSlideStackedView(int category, QWidget* parent) : QStack
     connect(mpAnime, &QPropertyAnimation::valueChanged, this, &OwnSlideStackedView::valueChangedAnimation);
     connect(mpAnime, &QPropertyAnimation::finished, this, &OwnSlideStackedView::animationFininshed);
 
-    auto pItemViewer = OwnConfig::getInstance()->getItemViewer();
-    connect(pItemViewer,
+    auto pDialog = OwnConfig::getInstance()->getItemViewer();
+    connect(pDialog,
             static_cast<void(OwnItemUploadView::*)(int, int)>(&OwnItemUploadView::sendItemChangedMsg),
             this,
             static_cast<void(OwnSlideStackedView::*)(int, int)>(&OwnSlideStackedView::updateElements));
@@ -134,7 +134,8 @@ void OwnSlideStackedView::updateElements(int id, int oper)
 
 void OwnSlideStackedView::initRightMenu()
 {
-    auto pDialog = OwnConfig::getInstance()->getItemViewer();
+    OwnItemUploadView* pDialog = Q_NULLPTR;
+    OwnConfig::getInstance()->handler(pDialog, HANDLER_OPER::OPER_GET);
     {
         auto action = new QAction("add", this);
         connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
