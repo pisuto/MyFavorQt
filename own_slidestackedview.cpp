@@ -134,8 +134,7 @@ void OwnSlideStackedView::updateElements(int id, int oper)
 
 void OwnSlideStackedView::initRightMenu()
 {
-    OwnItemUploadView* pDialog = Q_NULLPTR;
-    OwnConfig::getInstance()->handler(pDialog, HANDLER_OPER::OPER_GET);
+    auto pDialog = OwnConfig::getInstance()->getItemViewer();
     {
         auto action = new QAction("add", this);
         connect(action, static_cast<void(QAction::*)(bool)>(&QAction::triggered),
