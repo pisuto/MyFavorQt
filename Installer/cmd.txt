@@ -1,0 +1,1 @@
+D:\Qt\QtIFW-4.2.0\bin>binarycreator.exe -c F:\Projects\Project.program\Qt\startmenu\config\config.xml -p F:\Projects\Project.program\Qt\startmenu\packages -v

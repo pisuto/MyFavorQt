@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>MyFavor</DisplayName>
+    <Description>A software collects entertainment where holds important memory.</Description>
+    <Version>0.0.1-1</Version>
+    <ReleaseDate>2022-01-02</ReleaseDate>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+</Package>

@@ -17,7 +17,7 @@ class OwnDatabase : public OwnSingleton<OwnDatabase>
 {
 public:
     OwnDatabase();
-    ~OwnDatabase() { deleteAllStoredItem(); mDBAllocator.close(); }
+    ~OwnDatabase() { mDBAllocator.close(); }
 
     int insert(odbitem& item);
     odbitem select(odbitem& item);
@@ -31,8 +31,16 @@ public:
     void storeDeletingItem(odbitem& item);
     void removeDeletingItem(int id);
     QSharedPointer<odbitem> returnDeletingItem(int id) const;
+    void deleteAllStoredItem();
 
 private:
+
+    template<typename ...Args>
+    void bindValues(Args&...) {}
+
+    template<>
+    void bindValues() {}
+
     template<typename T, typename ...Args>
     void bindValues(T& type, Args&... args)
     {
@@ -41,11 +49,7 @@ private:
         bindValues(args...);
     }
 
-    template<int = 0>
-    void bindValues() {}
-
     void resetItemWithResult(odbitem& item);
-    void deleteAllStoredItem();
 
 private:
     QSqlDatabase mDBAllocator;

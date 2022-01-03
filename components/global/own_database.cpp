@@ -106,7 +106,7 @@ bool OwnDatabase::remove(odbitem &item)
     bindValues(item.id);
     if(!mQueExecutor.exec())
     {
-        qDebug() << "ERROR: " << SQL_SYNTAX::SELECT_ITEM_SQL << " "
+        qDebug() << "ERROR: " << SQL_SYNTAX::DELETE_ITEM_SQL << " "
                  << mQueExecutor.lastError();
         return false;
     }

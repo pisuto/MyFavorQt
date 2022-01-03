@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>MyFavor</Name>
+    <Version>0.0.1</Version>
+    <Title>MyFavor Install Guide</Title>
+    <Publisher>Qt-Project</Publisher>
+    <ProductUrl>https://github.com/pisuto/MyFavorQt</ProductUrl>
+    <!-- Directory name is used in component.xml -->
+    <WizardStyle>Modern</WizardStyle>
+    <Logo>logo.png</Logo>
+    <StartMenuDir>MyFavor</StartMenuDir>
+    <TargetDir>@ApplicationsDirX64@/MyFavor-0.0.1</TargetDir>
+    <InstallerApplicationIcon>ice</InstallerApplicationIcon>
+    <InstallerWindowIcon>ice.png</InstallerWindowIcon>
+</Installer>

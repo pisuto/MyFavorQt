@@ -176,6 +176,7 @@ void OwnConfig::resolve_handler(OwnMainWidget *object, int oper)
     else if(oper == HANDLER_OPER::OPER_DEL) {
         /* 析构 */
         helper.write(data);
+        OwnDatabase::getInstance()->deleteAllStoredItem();
     }
 }
 
