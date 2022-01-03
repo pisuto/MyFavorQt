@@ -23,7 +23,7 @@ Many websites have collection functions that mostly cannot be customized, and th
 ### Open with installer
 Download the released executable file, double click `install.exe` to finish installation or use portable version for quick start. 
 ### Open with Qt5
-Another choice is to open with Qt5 after downloading the source code. Clone the source code to an empty fold, then click `.pro.user` to open project when ensuring Qt5 is already installed.
+Another choice is to open with Qt5 after downloading the source code. Clone the source code to an empty fold, then ensure Qt5 is already installed and click `.pro.user` to open project.
 ```sh
 $ git clone https://github.com/pisuto/MyFavorQt.git
 ```
