@@ -1,3 +1,10 @@
+/**
+* This file is part of MyFavor
+*
+* Copyright (C) 2021-2022 Pisuto.
+*
+*/
+
 #include "own_database.h"
 #include "own_database_item.h"
 #include "own_util.h"

@@ -1,3 +1,10 @@
+/**
+* This file is part of MyFavor
+*
+* Copyright (C) 2021-2022 Pisuto.
+*
+*/
+
 #include "MainWindow.h"
 #include "components/global/own_config.h"
 #include "components/global/own_util.h"

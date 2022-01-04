@@ -3,6 +3,13 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+/**
+* This file is part of MyFavor
+*
+* Copyright (C) 2021-2022 Pisuto.
+*
+*/
+
 #include <QSqlError>
 
 #include "own_config.h"

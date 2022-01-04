@@ -1,3 +1,10 @@
+/**
+* This file is part of MyFavor
+*
+* Copyright (C) 2021-2022 Pisuto.
+*
+*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

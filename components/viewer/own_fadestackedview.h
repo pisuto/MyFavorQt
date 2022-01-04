@@ -1,3 +1,10 @@
+/**
+* This file is part of MyFavor
+*
+* Copyright (C) 2021-2022 Pisuto.
+*
+*/
+
 #ifndef OWN_FADESTACKEDVIEW_H
 #define OWN_FADESTACKEDVIEW_H
 
